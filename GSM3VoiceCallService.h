@@ -29,7 +29,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 The latest version of this library can always be found at
-http://www.tid.es
+https://github.com/BlueVia/Official-Arduino
 */
 #ifndef _GSM3VOICECALLSERVICE_
 #define _GSM3VOICECALLSERVICE_
@@ -42,59 +42,58 @@ class GSM3VoiceCallService
 	private:
 		uint8_t flags;
 		
-		// Internal. This function takes responsibility to make
-		// synchronous the functions, if needed.
+		/** Make synchronous the functions, if needed
+			@param returnvalue	Return value
+			@return returns 0 if last command is still executing, 1 success, >1 error
+		 */
 		int waitForAnswerIfNeeded(int returnvalue);
 		
 	public:
 		/** Service creation
-		  @param	synch	If true, the service calls are synchronois
-		  @return -
+			@param synch		If true, the service calls are synchronois
 		*/
 		GSM3VoiceCallService(bool synch=true);
 
 		/** Voice call status
-		  @param	
-		  @return Status of the voice call, as described in GSM3MobileVoiceProvider.h
+			@return Status of the voice call, as described in GSM3MobileVoiceProvider.h
 		          { IDLE_CALL, CALLING, RECEIVINGCALL, TALKING};
 		*/
 		GSM3_voiceCall_st getvoiceCallStatus();
 
 		/** Get last command status
-		  @param	
-		  @return Returns 0 if last command is still executing, 1 success, >1 error
+			@return Returns 0 if last command is still executing, 1 success, >1 error
 		*/
 		int ready();
 		
 		/** Place a voice call. If asynchronous, returns while ringing. If synchronous
 			returns if the call is stablished or cancelled.
-		  @param	to	Receiver number. Country extension can be used or not.
-						Char buffer should not be released or used until command is over
-		  @param	timeout	In millisecods. Time ringing before closing the call. 
-							Only used in synchronous mode.
-							If zero, ring undefinitely
-		  @return In asynchronous mode returns 0 if last command is still executing, 1 success, >1 error
+			@param to			Receiver number. Country extension can be used or not.
+								Char buffer should not be released or used until command is over
+			@param timeout		In millisecods. Time ringing before closing the call. 
+								Only used in synchronous mode.
+								If zero, ring undefinitely
+			@return In asynchronous mode returns 0 if last command is still executing, 1 success, >1 error
 					In synchronous mode returns 1 if the call is placed, 0 if not.
 		*/		
 		int voiceCall(const char* to, unsigned long timeout=30000);
 		
 		/** Accept an incoming voice call
-		  @return In asynchronous mode returns 0 if last command is still executing, 1 success, >1 error
-				  In synchronous mode returns 1 if the call is answered, 0 if not.
+			@return In asynchronous mode returns 0 if last command is still executing, 1 success, >1 error
+					In synchronous mode returns 1 if the call is answered, 0 if not.
 		*/		
 		int answerCall();
 		
 		/** Hang a stablished call or an incoming ring
-		  @return In asynchronous mode returns 0 if last command is still executing, 1 success, >1 error
-				  In synchronous mode returns 1 if the call is answered, 0 if not.
+			@return In asynchronous mode returns 0 if last command is still executing, 1 success, >1 error
+					In synchronous mode returns 1 if the call is answered, 0 if not.
 		*/		
 		int hangCall();
 
 		/** Retrieve the calling number, put it in buffer
-		@param	buffer	pointer to the buffer memory
-		@param	bufsize	size of available memory area, at least should be 10 characters
-		 @return In asynchronous mode returns 0 if last command is still executing, 1 success, >1 error
-				  In synchronous mode returns 1 if the number is correcty taken 0 if not
+			@param buffer		pointer to the buffer memory
+			@param bufsize		size of available memory area, at least should be 10 characters
+			@return In asynchronous mode returns 0 if last command is still executing, 1 success, >1 error
+					In synchronous mode returns 1 if the number is correcty taken 0 if not
 		*/		
 		int retrieveCallingNumber(char* buffer, int bufsize);
 };

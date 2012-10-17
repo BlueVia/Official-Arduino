@@ -13,20 +13,19 @@
  */
 
 // libraries
-#include <GSM3ShieldV1AccessProvider.h>
-#include <GSM3ShieldV1ScanNetworks.h>
-#include <GSM3ShieldV1ModemVerification.h>
-#include <GSM3ShieldV1BandManagement.h>
+#include <GSM.h>
+
+// PIN Number
+#define PINNUMBER ""
 
 // initialize the library instance
-GSM3ShieldV1AccessProvider gsmAccess;     // include a 'true' parameter for debug enabled
-GSM3ShieldV1ScanNetworks scannerNetworks;
-GSM3ShieldV1ModemVerification modemTest;
-GSM3ShieldV1BandManagement bandManager;
+GSM gsmAccess;     // include a 'true' parameter for debug enabled
+GSMScanner scannerNetworks;
+GSMModem modemTest;
+GSMBand bandManager;
 
 // Save data variables
 String IMEI = "";
-char PIN[] = "";
 
 // serial monitor result messages
 String errortext = "ERROR";
@@ -45,7 +44,7 @@ void setup()
   // If your SIM has PIN, pass it as a parameter of begin() in quotes
   while(notConnected)
   {
-    if(gsmAccess.begin(PIN)==GSM_READY)
+    if(gsmAccess.begin(PINNUMBER)==GSM_READY)
       notConnected = false;
     else
     {

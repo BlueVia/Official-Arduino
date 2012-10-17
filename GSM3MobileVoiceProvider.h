@@ -29,7 +29,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 The latest version of this library can always be found at
-http://www.tid.es
+https://github.com/BlueVia/Official-Arduino
 */
 #ifndef _GSM3MOBILEVOICEPROVIDER_
 #define _GSM3MOBILEVOICEPROVIDER_
@@ -39,16 +39,43 @@ enum GSM3_voiceCall_st { IDLE_CALL, CALLING, RECEIVINGCALL, TALKING};
 class GSM3MobileVoiceProvider
 {
 	public:
-		//Call functions.
+		
+		/** Launch a voice call
+			@param number	 	Phone number to be called
+			@return If asynchronous, returns 0. If synchronous, 1 if success, other if error
+		*/
 		virtual int voiceCall(const char* number)=0;
+		
+		/** Answer a voice call
+			@return If asynchronous, returns 0. If synchronous, 1 if success, other if error
+		*/
 		virtual int answerCall()=0;
+		
+		/** Hang a voice call
+			@return If asynchronous, returns 0. If synchronous, 1 if success, other if error
+		*/
 		virtual int hangCall()=0;
+		
+		/** Retrieve phone number of caller
+			@param buffer		Buffer for copy phone number
+			@param bufsize		Buffer size
+			@return If asynchronous, returns 0. If synchronous, 1 if success, other if error
+		*/
 		virtual int retrieveCallingNumber(char* buffer, int bufsize)=0;
 
+		/** Returns voice call status
+			@return voice call status
+		*/
 		virtual GSM3_voiceCall_st getvoiceCallStatus()=0;
+		
+		/**	Set voice call status
+			@param status		New status for voice call
+		*/
 		virtual void setvoiceCallStatus(GSM3_voiceCall_st status)=0;
 
-
+		/** Get last command status
+			@return Returns 0 if last command is still executing, 1 success, >1 error
+		*/
 		virtual int ready()=0;
 };
 

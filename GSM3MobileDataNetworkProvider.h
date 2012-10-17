@@ -29,7 +29,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 The latest version of this library can always be found at
-http://www.tid.es
+https://github.com/BlueVia/Official-Arduino
 */
 #ifndef _GSM3MOBILEDATANETWORKPROVIDER_
 #define _GSM3MOBILEDATANETWORKPROVIDER_
@@ -42,8 +42,17 @@ class GSM3MobileDataNetworkProvider
 {
 	public:
 		
+		/** Attach to GPRS/GSM network
+			@param networkId 	APN GPRS
+			@param user			Username
+			@param pass			Password
+			@return connection status
+		 */
 		virtual GSM3_NetworkStatus_t networkAttach(char* networId, char* user, char* pass)=0;
 		
+		/** Detach GPRS/GSM network
+			@return connection status
+		 */
 		virtual GSM3_NetworkStatus_t networkDetach()=0;
 				
 };

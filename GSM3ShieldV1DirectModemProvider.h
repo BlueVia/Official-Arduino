@@ -29,8 +29,9 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 The latest version of this library can always be found at
-http://www.tid.es
+https://github.com/BlueVia/Official-Arduino
 */
+
 #ifndef __GSM3DIRECTMODEMPROVIDER__
 #define __GSM3DIRECTMODEMPROVIDER__
 
@@ -40,43 +41,78 @@ http://www.tid.es
 #include <Stream.h>
 #include <Arduino.h>
 
-
-
 class GSM3ShieldV1DirectModemProvider : public GSM3ShieldV1BaseProvider, public Stream
 {			
 		private:
+			
 			bool trace;
 			
         public:
+			
 			/** Constructor
-			 @param trace if true, dumps all AT dialogue to Serial
-			 @return - 
+				@param trace if true, dumps all AT dialogue to Serial
 			*/
 			GSM3ShieldV1DirectModemProvider(bool trace=false);
 			
-			// begin
+			/**
+			 */
 			void begin();
+			
+			/**
+			 */
 			void restartModem();
 			
-			//Enable the debug process.
+			/** Enable the debug process.
+			 */
 			void connect();
-			//Disable the debug process.
+			
+			/** Disable the debug process.
+			 */
 			void disconnect();
 			
-			//Debug write to modem by means of SoftSerial.
+			/** Debug write to modem by means of SoftSerial.
+				@param c			Character
+				@return size
+			 */
 			size_t write(uint8_t c);
 			
-			int available(); // check for incoming bytes in buffer
-			int read(); // read from circular buffer
-			int peek(); // read from circular buffer, but do not delete it
-			void flush(); // empty circular buffer
+			/** Check for incoming bytes in buffer
+				@return
+			 */
+			int available();
 			
+			/** Read from circular buffer
+				@return character
+			 */
+			int read();
+			
+			/** Read from circular buffer, but do not delete it
+				@return character
+			 */
+			int peek();
+			
+			/** Empty circular buffer
+			 */
+			void flush();
+			
+			/** Manages modem response
+				@param from 		Initial byte of buffer
+				@param to 			Final byte of buffer
+			 */
 			void manageResponse(byte from, byte to){};
+			
+			/** Recognize unsolicited event
+				@param from		
+				@return true if successful
+			 */
 			bool recognizeUnsolicitedEvent(byte from){return false;};
 			
+			/** Send AT command to modem
+				@param command		AT command
+				@param delay		Time to wait for response
+				@return response from modem
+			 */
 			String writeModemCommand(String command, int delay);
-
-		
 };
 
 #endif

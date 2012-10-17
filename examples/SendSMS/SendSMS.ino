@@ -17,14 +17,13 @@ SMS sender
  */
 
 // libraries
-#include <GSM3SMSService.h>
-#include <GSM3ShieldV1AccessProvider.h>
-#include <GSM3ShieldV1SMSProvider.h>
+#include <GSM.h>
+
+#define PINNUMBER ""
 
 // initialize the library instance
-GSM3ShieldV1AccessProvider gsmAccess; // include a 'true' parameter for debug enabled
-GSM3SMSService sms;
-GSM3ShieldV1SMSProvider smsp;
+GSM gsmAccess; // include a 'true' parameter for debug enabled
+GSM_SMS sms;
 
 void setup()
 {
@@ -40,7 +39,7 @@ void setup()
   // If your SIM has PIN, pass it as a parameter of begin() in quotes
   while(notConnected)
   {
-    if(gsmAccess.begin()==GSM_READY)
+    if(gsmAccess.begin(PINNUMBER)==GSM_READY)
       notConnected = false;
     else
     {

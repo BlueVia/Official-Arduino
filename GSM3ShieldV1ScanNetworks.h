@@ -29,7 +29,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 The latest version of this library can always be found at
-http://www.tid.es
+https://github.com/BlueVia/Official-Arduino
 */
 #ifndef __GSM3SHIELDV1SCANNETWORKS__
 #define __GSM3SHIELDV1SCANNETWORKS__
@@ -46,37 +46,30 @@ class GSM3ShieldV1ScanNetworks
 	public:
 	
 		/** Constructor
-         @param trace if true, dumps all AT dialogue to Serial
-		 @return - 
+			@param trace		if true, dumps all AT dialogue to Serial
+			@return - 
 		*/
 		GSM3ShieldV1ScanNetworks(bool trace=false);
 		
-		/** begin
-			Forces modem hardware restart, so we begin from scratch
-         @param 
-		 @return Always returns IDLE status
+		/** begin (forces modem hardware restart, so we begin from scratch)
+			@return Always returns IDLE status
 		*/
 		GSM3_NetworkStatus_t begin();
 
-		/**
-			Read current carrier
-		 @param
-		 @return Current carrier
+		/**	Read current carrier
+			@return Current carrier
 		 */
 		String getCurrentCarrier();
 		
-		/**
-			Obtain signal strength
-		 @param
-		 @return Signal Strength
+		/** Obtain signal strength
+			@return Signal Strength
 		 */
 		String getSignalStrength();
 		
-		/**
-			Search available carriers
-		 @param
-		 @return A string with list of networks available
+		/** Search available carriers
+			@return A string with list of networks available
 		 */
 		String readNetworks();
 };
+
 #endif

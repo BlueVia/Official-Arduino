@@ -29,7 +29,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 The latest version of this library can always be found at
-http://www.tid.es
+https://github.com/BlueVia/Official-Arduino
 */
 
 #ifndef _GSM3SHIELDV1VOICEPROVIDER_
@@ -42,37 +42,90 @@ http://www.tid.es
 class GSM3ShieldV1VoiceProvider : public GSM3MobileVoiceProvider, public GSM3ShieldV1BaseProvider
 {
 	public:
+		
+		/** Constructor */
 		GSM3ShieldV1VoiceProvider();
+		
+		/** Manages modem response
+			@param from 		Initial byte of buffer
+			@param to 			Final byte of buffer
+		 */
 		void manageResponse(byte from, byte to);
 
 		//Call functions.
+		
 		/** Launch a voice call
-         @param number 		phone number to be called
-		 @return If asynchronous, returns 0. If synchronous, 1 if success, other if error
-		*/
+			@param number	 	Phone number to be called
+			@return If asynchronous, returns 0. If synchronous, 1 if success, other if error
+		 */
 		int voiceCall(const char* number);
+		
+		/** Answer a voice call
+			@return If asynchronous, returns 0. If synchronous, 1 if success, other if error
+		 */
 		int answerCall();
+		
+		/** Hang a voice call
+			@return If asynchronous, returns 0. If synchronous, 1 if success, other if error
+		 */
 		int hangCall();
+		
+		/** Retrieve phone number of caller
+			@param buffer		Buffer for copy phone number
+			@param bufsize		Buffer size
+			@return If asynchronous, returns 0. If synchronous, 1 if success, other if error
+		 */
 		int retrieveCallingNumber(char* buffer, int bufsize);
 		
+		/** Get last command status
+			@return Returns 0 if last command is still executing, 1 success, >1 error
+		 */
 		int ready(){return GSM3ShieldV1BaseProvider::ready();};
+		
+		/** Recognize URC
+			@param oldTail		
+			@return true if successful
+		 */		
 		bool recognizeUnsolicitedEvent(byte oldTail);
 		
+		/** Returns voice call status
+			@return voice call status
+		 */
 		GSM3_voiceCall_st getvoiceCallStatus(){ready(); return _voiceCallstatus;};
+		
+		/**	Set voice call status
+			@param status		New status for voice call
+		 */
 		void setvoiceCallStatus(GSM3_voiceCall_st status) { _voiceCallstatus = status; };
 
 		
 	private:
-		int phonelength;		//Phone number length.
-		// The voiceCall status.
-		GSM3_voiceCall_st _voiceCallstatus;
+		
+		int phonelength; // Phone number length
+		
+		GSM3_voiceCall_st _voiceCallstatus; // The voiceCall status
 
-		//CALL private functions.
+		/** Continue to voice call function
+		 */
 		void voiceCallContinue();
+		
+		/** Continue to answer call function
+		 */
 		void answerCallContinue();
+		
+		/** Continue to hang call function
+		 */
 		void hangCallContinue();
+		
+		/** Continue to retrieve calling number function
+		 */
 		void retrieveCallingNumberContinue();
 		
+		/** Parse CLCC response from buffer
+			@param number		Number initial for extract substring of response
+			@param nlength		Substring length
+			@return true if successful
+		 */
 		bool parseCLCC(char* number, int nlength);
 
 };

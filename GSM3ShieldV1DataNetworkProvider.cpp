@@ -1,19 +1,8 @@
 #include <GSM3ShieldV1DataNetworkProvider.h>
 #include <Arduino.h>
 
-PROGMEM prog_char _command_CGATT[]={"AT+CGATT="};
-PROGMEM prog_char _command_QIFGCNT[]={"AT+QIFGCNT=0"};
-PROGMEM prog_char _command_QICSGP[]={"AT+QICSGP=1,\""};
-PROGMEM prog_char _command_QIMUX[]={"AT+QIMUX=0"}; // =1 for multisocket
-PROGMEM prog_char _command_SEPARATOR[]={"\",\""};
-PROGMEM prog_char _command_QIMODE[]={"AT+QIMODE=1"}; // =0 for multisocket
-PROGMEM prog_char _command_QINDI[]={"AT+QINDI=1"};
-PROGMEM prog_char _command_QIREGAPP[]={"AT+QIREGAPP"};
-PROGMEM prog_char _command_PDPDEACT[]={"+PDP DEACT"};
-PROGMEM prog_char _command_QIACT[]={"AT+QIACT"};
-PROGMEM prog_char _command_MonoQILOCIP[]={"AT+QILOCIP"};
-
-
+char _command_CGATT[] PROGMEM = "AT+CGATT=";
+char _command_SEPARATOR[] PROGMEM = "\",\"";
 
 //Attach GPRS main function.	
 GSM3_NetworkStatus_t GSM3ShieldV1DataNetworkProvider::attachGPRS(char* apn, char* user_name, char* password, bool synchronous)
@@ -33,7 +22,7 @@ GSM3_NetworkStatus_t GSM3ShieldV1DataNetworkProvider::attachGPRS(char* apn, char
 	{
 		// if we shorten this delay, the command fails
 		while(ready()==0) 
-			delay(1000); 
+			delay(100); 
 	}
 
 	return theGSM3ShieldV1ModemCore.getStatus();	
@@ -67,7 +56,7 @@ void GSM3ShieldV1DataNetworkProvider::attachGPRSContinue()
 			if(resp)
 			{
 				//AT+QIFGCNT
-				theGSM3ShieldV1ModemCore.genericCommand_rq(_command_QIFGCNT);
+				theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("AT+QIFGCNT=0"));
 				theGSM3ShieldV1ModemCore.setCommandCounter(3);
 			}
 			else theGSM3ShieldV1ModemCore.closeCommand(3);
@@ -81,7 +70,7 @@ void GSM3ShieldV1DataNetworkProvider::attachGPRSContinue()
 				// Great. Go for the next step
 				//DEBUG
 				//Serial.println("AT+QICSGP.");	
-				theGSM3ShieldV1ModemCore.genericCommand_rq(_command_QICSGP,false);
+				theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("AT+QICSGP=1,\""),false);
 				theGSM3ShieldV1ModemCore.print(theGSM3ShieldV1ModemCore.getPhoneNumber());
 				theGSM3ShieldV1ModemCore.genericCommand_rq(_command_SEPARATOR,false);
 				theGSM3ShieldV1ModemCore.print(user);
@@ -98,8 +87,8 @@ void GSM3ShieldV1DataNetworkProvider::attachGPRSContinue()
 	    {
 			if(resp)
 			{
-				// AT+QIMUX
-				theGSM3ShieldV1ModemCore.genericCommand_rq(_command_QIMUX);
+				// AT+QIMUX=1 for multisocket
+				theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("AT+QIMUX=0"));
 				theGSM3ShieldV1ModemCore.setCommandCounter(5);
 			}
 			else theGSM3ShieldV1ModemCore.closeCommand(3);
@@ -110,8 +99,8 @@ void GSM3ShieldV1DataNetworkProvider::attachGPRSContinue()
 	    {
 			if(resp)
 			{
-				//AT+QIMODE
-				theGSM3ShieldV1ModemCore.genericCommand_rq(_command_QIMODE);
+				//AT+QIMODE=0 for multisocket
+				theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("AT+QIMODE=1"));
 				theGSM3ShieldV1ModemCore.setCommandCounter(6);
 			}
 			else theGSM3ShieldV1ModemCore.closeCommand(3);
@@ -123,7 +112,7 @@ void GSM3ShieldV1DataNetworkProvider::attachGPRSContinue()
 			if(resp)
 			{
 				// AT+QINDI=1
-				theGSM3ShieldV1ModemCore.genericCommand_rq(_command_QINDI);
+				theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("AT+QINDI=1"));
 				theGSM3ShieldV1ModemCore.setCommandCounter(8);
 			}
 			else theGSM3ShieldV1ModemCore.closeCommand(3);
@@ -135,7 +124,7 @@ void GSM3ShieldV1DataNetworkProvider::attachGPRSContinue()
 			if(resp)
 			{
 				// AT+QIREGAPP
-				theGSM3ShieldV1ModemCore.genericCommand_rq(_command_QIREGAPP);
+				theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("AT+QIREGAPP"));
 				theGSM3ShieldV1ModemCore.setCommandCounter(9);
 			}
 			else theGSM3ShieldV1ModemCore.closeCommand(3);
@@ -147,7 +136,7 @@ void GSM3ShieldV1DataNetworkProvider::attachGPRSContinue()
 			if(resp)
 			{
 				// AT+QIACT	
-				theGSM3ShieldV1ModemCore.genericCommand_rq(_command_QIACT);
+				theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("AT+QIACT"));
 				theGSM3ShieldV1ModemCore.setCommandCounter(10);
 			}
 			else theGSM3ShieldV1ModemCore.closeCommand(3);
@@ -200,7 +189,7 @@ void GSM3ShieldV1DataNetworkProvider::detachGPRSContinue()
 		break;
 	case 2:
 		char auxLocate[12];
-		prepareAuxLocate(_command_PDPDEACT, auxLocate);
+		prepareAuxLocate(PSTR("+PDP DEACT"), auxLocate);
 		if(theGSM3ShieldV1ModemCore.theBuffer().locate(auxLocate))
 	    {
 			if(resp)
@@ -256,7 +245,7 @@ void GSM3ShieldV1DataNetworkProvider::getIPContinue()
 	switch (theGSM3ShieldV1ModemCore.getCommandCounter()) {
 	case 1:
 		//AT+QILOCIP
-		theGSM3ShieldV1ModemCore.genericCommand_rq(_command_MonoQILOCIP);
+		theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("AT+QILOCIP"));
 		theGSM3ShieldV1ModemCore.setCommandCounter(2);
 		break;
 	case 2:
@@ -275,12 +264,13 @@ void GSM3ShieldV1DataNetworkProvider::getIPContinue()
 
 //Get IP with IPAddress object
 IPAddress GSM3ShieldV1DataNetworkProvider::getIPAddress() {
-	char ip_temp[15]="EMPTY";
+	char ip_temp[15]="";
 	getIP(ip_temp, 15);
 	unsigned long m=millis();
-	while((millis()-m)<10*1000){
+
+	while((millis()-m)<10*1000 && (!ready())){
 		// wait for a response from the modem:
-		delay(1000);
+		delay(100);
 	} 
 	IPAddress ip;
 	inet_aton(ip_temp, ip);

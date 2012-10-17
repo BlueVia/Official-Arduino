@@ -29,21 +29,32 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 The latest version of this library can always be found at
-http://www.tid.es
+https://github.com/BlueVia/Official-Arduino
 */
 #include <GSM3MobileServerService.h>
 #include <GSM3MobileServerProvider.h>
 #include <GSM3MobileClientProvider.h>
 
 
-#define __TOUTGPRS__ 10000
+#define __TOUTSERVER__ 10000
 #define BUFFERSIZETWEET 100
 
+#define GSM3MOBILESERVERSERVICE_SYNCH 0x01 // 1: TRUE, compatible with other clients 0: FALSE
 
-GSM3MobileServerService::GSM3MobileServerService(uint8_t port)
+// While there is only a shield (ShieldV1) we will include it by default
+#include <GSM3ShieldV1ServerProvider.h>
+GSM3ShieldV1ServerProvider theShieldV1ServerProvider;
+
+
+GSM3MobileServerService::GSM3MobileServerService(uint8_t port, bool synch)
 {
 	mySocket=0;
 	_port=port;
+	flags = 0;
+	
+	// If synchronous
+	if(synch)
+		flags |= GSM3MOBILESERVERSERVICE_SYNCH;
 }
 
 // Returns 0 if last command is still executing
@@ -59,6 +70,9 @@ void GSM3MobileServerService::begin()
 	if(theGSM3MobileServerProvider==0)
 		return;
 	theGSM3MobileServerProvider->connectTCPServer(_port);
+	
+	if(flags & GSM3MOBILESERVERSERVICE_SYNCH)
+		waitForAnswer();
 }
 
 GSM3MobileClientService GSM3MobileServerService::available(bool synch)
@@ -69,8 +83,8 @@ GSM3MobileClientService GSM3MobileServerService::available(bool synch)
 	
 	newSocket=theGSM3MobileServerProvider->getNewOccupiedSocketAsServer();
 	
-	// Instatiate new client. If synch, the client is synchronous/blocking
-	GSM3MobileClientService client((uint8_t)(newSocket), synch);
+	// Instatiate new client. If we are synch, the client is synchronous/blocking
+	GSM3MobileClientService client((uint8_t)(newSocket), (flags & GSM3MOBILESERVERSERVICE_SYNCH));
 
 	return client;
 }
@@ -112,6 +126,8 @@ void GSM3MobileServerService::stop()
 	
 	// Review, should be the server?
 	theGSM3MobileClientProvider->disconnectTCP(local1Remote0, mySocket);
+	if(flags & GSM3MOBILESERVERSERVICE_SYNCH)
+		waitForAnswer();
 	theGSM3MobileClientProvider->releaseSocket(mySocket);
 	mySocket = -1;
 }
@@ -121,5 +137,23 @@ void GSM3MobileServerService::stop()
 {
 	return theGSM3MobileServerProvider->getIP(LocalIP, LocalIPlength);
 }*/
+
+int GSM3MobileServerService::waitForAnswer()
+{
+	unsigned long m;
+	m=millis();
+	int res;
+	
+	while(((millis()-m)< __TOUTSERVER__ )&&(ready()==0)) 
+		delay(10);
+	
+	res=ready();
+
+	// If we get something different from a 1, we are having a problem
+	if(res!=1)
+		res=0;
+
+	return res;
+}
 
 

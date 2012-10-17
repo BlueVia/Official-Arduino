@@ -29,7 +29,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 The latest version of this library can always be found at
-http://www.tid.es
+https://github.com/BlueVia/Official-Arduino
 */
 
 #include <GSM3ShieldV1ModemVerification.h>
@@ -40,16 +40,22 @@ GSM3ShieldV1ModemVerification::GSM3ShieldV1ModemVerification()
 };
 
 // reset the modem for direct access
-void GSM3ShieldV1ModemVerification::begin()
+int GSM3ShieldV1ModemVerification::begin()
 {
+	int result=0;
+	String modemResponse;
+	
 	// check modem response
 	modemAccess.begin();
 
 	// reset hardware
 	modemAccess.restartModem();
 
-	modemAccess.writeModemCommand("AT", 1000);
-	modemAccess.writeModemCommand("ATE0", 1000);
+	modemResponse=modemAccess.writeModemCommand("AT", 1000);
+	if(modemResponse.indexOf("OK")>=0)
+		result=1;
+	modemResponse=modemAccess.writeModemCommand("ATE0", 1000);
+	return result;
 }
 
 // get IMEI

@@ -11,16 +11,15 @@
  */
 
 // libraries
-#include <GSM3ShieldV1AccessProvider.h>
-#include <GSM3ShieldV1DataNetworkProvider.h>
-#include <GSM3MobileClientService.h>
-#include <GSM3ShieldV1ClientProvider.h>
+#include <GSM.h>
+
+// PIN Number
+#define PINNUMBER ""
 
 // initialize the library instance
-GSM3ShieldV1AccessProvider gsmAccess;        // GSM access: include a 'true' parameter for debug enabled
-GSM3ShieldV1DataNetworkProvider gprsAccess;  // GPRS access
-GSM3MobileClientService client;  // Client service for TCP connection
-GSM3ShieldV1ClientProvider s1client;         // Client provider for TCP connection
+GSM gsmAccess;        // GSM access: include a 'true' parameter for debug enabled
+GPRS gprsAccess;  // GPRS access
+GSMClient client;  // Client service for TCP connection
 
 // messages for serial monitor response
 String oktext = "OK";
@@ -50,7 +49,7 @@ void loop()
   // start GSM shield
   // if your SIM has PIN, pass it as a parameter of begin() in quotes
   Serial.print("Connecting GSM network...");
-  if(gsmAccess.begin()!=GSM_READY)
+  if(gsmAccess.begin(PINNUMBER)!=GSM_READY)
   {
     Serial.println(errortext);
     while(true);

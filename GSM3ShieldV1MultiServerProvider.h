@@ -29,7 +29,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 The latest version of this library can always be found at
-http://www.tid.es
+https://github.com/BlueVia/Official-Arduino
 */
 #ifndef __GSM3_SHIELDV1SERVERPROVIDER__
 #define __GSM3_SHIELDV1SERVERPROVIDER__
@@ -40,35 +40,94 @@ http://www.tid.es
 class GSM3ShieldV1MultiServerProvider : public GSM3MobileServerProvider,  public GSM3ShieldV1BaseProvider
 {
 	private:
-		uint8_t socketsAsServer;		
+		
+		// Used sockets
+		uint8_t socketsAsServer;
 		uint8_t socketsAccepted;
 
+		/** Continue to connect TCP server function
+		 */
 		void connectTCPServerContinue();
+
+		/** Continue to get IP function
+		 */
 		void getIPContinue();
-
-		bool parseQILOCIP_rsp(char* LocalIP, int LocalIPlength, bool& rsp);
+		
+		/** Release socket
+			@param socket		Socket
+		 */
 		void releaseSocket(int socket);
-
+		
+		/** Parse QILOCIP response
+			@param LocalIP			Buffer for save local IP address
+			@param LocalIPlength	Buffer size
+			@param rsp				Returns if expected response exists
+			@return true if command executed correctly
+		 */
+		bool parseQILOCIP_rsp(char* LocalIP, int LocalIPlength, bool& rsp);
+		
 	public:
+	
+		/** Constructor */
 		GSM3ShieldV1MultiServerProvider();
+		
+		/** minSocketAsServer
+			@return 0
+		 */
 		int minSocketAsServer(){return 0;};
+		
+		/** maxSocketAsServer
+			@return 0
+		 */
 		int maxSocketAsServer(){return 4;};
 		
+		/** Get modem status
+			@param s
+			@return modem status (true if connected)
+		 */
 		bool getSocketAsServerModemStatus(int s);
+		
+		/** Get new occupied socket as server
+			@return command error if exists
+		 */
 		int getNewOccupiedSocketAsServer();
 
+		/** Connect server to TCP port
+			@param port			TCP port
+			@return	command error if exists
+		 */
 		int connectTCPServer(int port);
+		
+		/** Get server IP address
+			@param LocalIP			Buffer for copy IP address
+			@param LocalIPlength	Length of buffer
+			@return command error if exists
+		 */
 		int getIP(char* LocalIP, int LocalIPlength);
+		
 //		int disconnectTCP(bool client1Server0, int id_socket);
 		
-		// Returns 0 if last command is still executing
-		// 1 if success
-		// >1 if error 
+		/** Get last command status
+			@return returns 0 if last command is still executing, 1 success, >1 error
+		 */
 		int ready(){return GSM3ShieldV1BaseProvider::ready();};
 		
+		/** Get socket status as server
+			@param socket		Socket to get status
+			@return socket status
+		 */
 		bool getStatusSocketAsServer(uint8_t socket);
 		
+		/** Manages modem response
+			@param from 		Initial byte of buffer
+			@param to 			Final byte of buffer
+		 */
 		void manageResponse(byte from, byte to);
+		
+		/** Recognize unsolicited event
+			@param oldTail		
+			@return true if successful
+		 */		
 		bool recognizeUnsolicitedEvent(byte oldTail);
 
 	

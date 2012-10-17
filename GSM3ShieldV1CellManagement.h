@@ -29,32 +29,64 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 The latest version of this library can always be found at
-http://www.tid.es
+https://github.com/BlueVia/Official-Arduino
 */
-#ifndef __GSM3SHIELDV1CELLMANAGEMENT__
-#define __GSM3SHIELDV1CELLMANAGEMENT__
+#ifndef __GSM3_SHIELDV1CELLMANAGEMENT__
+#define __GSM3_SHIELDV1CELLMANAGEMENT__
 
-// This class executes band management functions for the ShieldV1
-#include <GSM3ShieldV1DirectModemProvider.h>
+#include <GSM3ShieldV1ModemCore.h>
+#include <GSM3MobileCellManagement.h>
+#include <GSM3ShieldV1CellManagement.h>
 
-class GSM3ShieldV1CellManagement
-{
-	private:
-
-		GSM3ShieldV1DirectModemProvider modem;
-		
+class GSM3ShieldV1CellManagement : public GSM3MobileCellManagement, public GSM3ShieldV1BaseProvider
+{		
 	public:
 	
 		/** Constructor
-		 @return - 
 		*/
 		GSM3ShieldV1CellManagement();
 
+		/** Manages modem response
+			@param from 		Initial byte of buffer
+			@param to 			Final byte of buffer
+		 */
+		void manageResponse(byte from, byte to);
+		
 		/** getLocation
-         @param 
 		 @return current cell location
 		*/		
-		String getLocation();
+		int getLocation(char *country, char *network, char *area, char *cell);
+		
+		/** getICCID
+		*/
+		int getICCID(char *iccid);
+		
+		/** Get last command status
+			@return returns 0 if last command is still executing, 1 success, >1 error
+		 */
+		int ready(){return GSM3ShieldV1BaseProvider::ready();};
 
+	private:	
+	
+		char *countryCode;
+		char *networkCode;
+		char *locationArea;
+		char *cellId;
+		
+		char bufferICCID[19];
+	
+		/** Continue to getLocation function
+		 */
+		void getLocationContinue();
+		
+		/** Continue to getICCID function
+		 */
+		void getICCIDContinue();
+		
+		bool parseQENG_available(bool& rsp);
+		
+		bool parseQCCID_available(bool& rsp);
+		
 };
+
 #endif

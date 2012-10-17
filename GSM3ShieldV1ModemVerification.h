@@ -29,7 +29,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 The latest version of this library can always be found at
-http://www.tid.es
+https://github.com/BlueVia/Official-Arduino
 */
 #ifndef _GSM3SHIELDV1MODEMVERIFICATION_
 #define _GSM3SHIELDV1MODEMVERIFICATION_
@@ -43,14 +43,20 @@ class GSM3ShieldV1ModemVerification
 	private:
 		
 		GSM3ShieldV1DirectModemProvider modemAccess;
-		GSM3ShieldV1AccessProvider gsm;
+		GSM3ShieldV1AccessProvider gsm; // Access provider to GSM/GPRS network
 		
 	public:
 
+		/** Constructor */
 		GSM3ShieldV1ModemVerification();
 	
-		void begin();
+		/** Check modem response and restart it
+		 */
+		int begin();
 		
+		/** Obtain modem IMEI (command AT)
+			@return modem IMEI number
+		 */
 		String getIMEI();
 		
 };

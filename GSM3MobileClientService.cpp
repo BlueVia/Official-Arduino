@@ -29,11 +29,16 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 The latest version of this library can always be found at
-http://www.tid.es
+https://github.com/BlueVia/Official-Arduino
 */
 #include <GSM3MobileClientService.h>
 #include <GSM3MobileClientProvider.h>
 #include <Arduino.h>
+
+// While there is only a shield (ShieldV1) we will include it by default
+#include <GSM3ShieldV1ClientProvider.h>
+GSM3ShieldV1ClientProvider theShieldV1ClientProvider;
+
 
 #define GSM3MOBILECLIENTSERVICE_CLIENT 0x01 // 1: This side is Client. 0: This side is Server
 #define GSM3MOBILECLIENTSERVICE_WRITING 0x02 // 1: TRUE 0: FALSE
@@ -84,9 +89,6 @@ int GSM3MobileClientService::connect(IPAddress add, uint16_t port)
 	if(flags & GSM3MOBILECLIENTSERVICE_SYNCH)
 		res=waitForAnswer();
 	
-	if(res!=1)
-		res=0;
-
 	return res;
 };
 
@@ -104,8 +106,6 @@ int GSM3MobileClientService::connect(const char *host, uint16_t port)
 	int res=theGSM3MobileClientProvider->connectTCPClient(host, port, mySocket);
 	if(flags & GSM3MOBILECLIENTSERVICE_SYNCH)
 		res=waitForAnswer();
-	if(res!=1)
-		res=0;
 		
 	return res;
 }
@@ -114,9 +114,18 @@ int GSM3MobileClientService::waitForAnswer()
 {
 	unsigned long m;
 	m=millis();
+	int res;
+	
 	while(((millis()-m)< __TOUTBEGINWRITE__ )&&(ready()==0)) 
 		delay(100);
-	return ready();
+	
+	res=ready();
+
+	// If we get something different from a 1, we are having a problem
+	if(res!=1)
+		res=0;
+
+	return res;
 }
 
 void GSM3MobileClientService::beginWrite(bool sync)
@@ -147,7 +156,8 @@ size_t GSM3MobileClientService::write(const uint8_t* buf, size_t sz)
 {
 	if(!(flags & GSM3MOBILECLIENTSERVICE_WRITING))
 		beginWrite(true);
-	theGSM3MobileClientProvider->writeSocket((const char*)(buf));
+	for(int i=0;i<sz;i++)
+		theGSM3MobileClientProvider->writeSocket(buf[i]);
 	return sz;
 }
 
@@ -182,12 +192,8 @@ int GSM3MobileClientService::available()
 
 	res=theGSM3MobileClientProvider->availableSocket(flags & GSM3MOBILECLIENTSERVICE_CLIENT,mySocket);
 	if(flags & GSM3MOBILECLIENTSERVICE_SYNCH)
-	{
 		res=waitForAnswer();
-		// If not 1, not available, it is really a '0', no data
-		if(res!=1)
-			res=0;
-	}
+
 	return res;
 }
 

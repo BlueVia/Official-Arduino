@@ -29,7 +29,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 The latest version of this library can always be found at
-http://www.tid.es
+https://github.com/BlueVia/Official-Arduino
 */
 #include <GSM3ShieldV1.h>
 #include <HardwareSerial.h>
@@ -45,17 +45,6 @@ http://www.tid.es
 #define __TOUTGPRS__ 10000
 #define __NCLIENTS_MAX__ 3
 
-
-
-PROGMEM prog_char _command_IFCON[]={"AT+IFC=1,1"};
-PROGMEM prog_char _command_IFCOF[]={"AT+IFC=0,0"};
-
-PROGMEM prog_char _command_QISTAT[]={"AT+QISTAT"};
-PROGMEM prog_char _command_QPING[]={"AT+QPING=\""};
-
-PROGMEM prog_char _LOC_SHUT[]={"POWER DOWN"};
-
-
 //Constructor.
 GSM3ShieldV1::GSM3ShieldV1(bool db) 
 {
@@ -64,8 +53,6 @@ GSM3ShieldV1::GSM3ShieldV1(bool db)
 	theGSM3ShieldV1ModemCore.registerUMProvider(this);
 	theProvider=this;
 }
-		
-			
 
 //Response management.
 void GSM3ShieldV1::manageResponse(byte from, byte to)
@@ -79,24 +66,11 @@ void GSM3ShieldV1::manageResponse(byte from, byte to)
 	}
 }
 
-//Command finished.
-
-
-
 //Function for 2 sec delay inside an interruption.
 void GSM3ShieldV1::delayInsideInterrupt2seg()
 {
 	for (int k=0;k<40;k++)  theGSM3ShieldV1ModemCore.gss.tunedDelay(50000); 
 } 
-
-
-
-	
-
-///////////////////////////////////////////////////////TCP BASIC FUNCTIONS///////////////////////////////////////////////////////////////////
-
-	
-	
 
 ///////////////////////////////////////////////////////UNSOLICITED RESULT CODE (URC) FUNCTIONS///////////////////////////////////////////////////////////////////
 
@@ -107,7 +81,7 @@ bool GSM3ShieldV1::recognizeUnsolicitedEvent(byte oldTail)
 int nlength;
 char auxLocate [15];
 	//POWER DOWN.
-	prepareAuxLocate(_LOC_SHUT, auxLocate);
+	prepareAuxLocate(PSTR("POWER DOWN"), auxLocate);
 	if(theGSM3ShieldV1ModemCore.gss.cb.locate(auxLocate))
 	{
 		theGSM3ShieldV1ModemCore.gss.cb.flush();

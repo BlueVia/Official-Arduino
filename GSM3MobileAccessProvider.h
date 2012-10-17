@@ -29,7 +29,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 The latest version of this library can always be found at
-http://www.tid.es
+https://github.com/BlueVia/Official-Arduino
 */
 #ifndef _GSM3MOBILEACCESSPROVIDER_
 #define _GSM3MOBILEACCESSPROVIDER_
@@ -41,9 +41,27 @@ class GSM3MobileAccessProvider
 	public:
 		// Access functions
 		//Configuration functions.
+		/** Establish GSM connection
+			@param pin			PIN code
+			@param restart		Determines if hardware restart
+			@param synchronous	Determines sync mode
+			@return If synchronous, GSM3_NetworkStatus_t. If asynchronous, returns 0.
+		 */
 		virtual inline GSM3_NetworkStatus_t begin(char* pin=0,bool restart=true, bool synchronous=true)=0;
+		
+		/** Check network access status
+			@return 1 if Alive, 0 if down
+		*/
 		virtual inline int isAccessAlive()=0;
+		
+		/** Shutdown the modem (power off really)
+			@return true if successful
+		 */
 		virtual inline bool shutdown()=0;
+		
+		/** Get last command status
+			@return returns 0 if last command is still executing, 1 success, >1 error
+		 */
 		virtual int ready()=0;
 };
 

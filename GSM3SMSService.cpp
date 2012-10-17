@@ -29,11 +29,15 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 The latest version of this library can always be found at
-http://www.tid.es
+https://github.com/BlueVia/Official-Arduino
 */
 #include <GSM3SMSService.h>
 #include <GSM3MobileNetworkProvider.h>
 #include <Arduino.h>
+
+// While there is only a shield (ShieldV1) we will include it by default
+#include <GSM3ShieldV1SMSProvider.h>
+GSM3ShieldV1SMSProvider theShieldV1SMSProvider;
 
 #define GSM3SMSSERVICE_SYNCH 0x01 // 1: synchronous 0: asynchronous
 #define __TOUT__ 10000

@@ -29,7 +29,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 The latest version of this library can always be found at
-http://www.tid.es
+https://github.com/BlueVia/Official-Arduino
 */
 #ifndef _GSM3MOBILESERVERSERVICE_
 #define _GSM3MOBILESERVERSERVICE_
@@ -41,19 +41,37 @@ http://www.tid.es
 class GSM3MobileServerService : public Server
 {
 	private:
-		uint8_t _port;
-		uint8_t mySocket;
+	
+		uint8_t _port; // Port
+		uint8_t mySocket; // Actual socket
+		uint8_t flags;
 		bool local1Remote0;
+	
+		/** Internal utility, used in synchronous calls
+			@return operation result, 1 if success, 0 otherwise
+		 */
+		int waitForAnswer();
+
 	public:
-		GSM3MobileServerService(uint8_t port);
-		// Returns 0 if last command is still executing
-		// 1 if success
-		// >1 if error 
+		
+		/** Constructor
+			@param port			Port
+			@param synch		True if the server acts synchronously
+		 */
+		GSM3MobileServerService(uint8_t port, bool synch=true);
+		
+		/** Get last command status
+			@return returns 0 if last command is still executing, 1 success, >1 error
+		 */
 		int ready();
+		
+		/** Initialize server
+		 */
 		void begin();
+		
 		/** Check if there is an incoming client request
-		  @param	synch	If true, the returned client is synchronous or
-							blocking.
+		  @param synch			If true, the returned client is synchronous or
+								blocking.
 		  @return Client if successful, else error
 		*/
 		GSM3MobileClientService available(bool synch=true);
@@ -62,12 +80,36 @@ class GSM3MobileServerService : public Server
 		// Write to every open socket...
 		//void write(uint8_t);
 		//void write(const uint8_t *buf, size_t size);
+		
+		/** Begin write in socket
+		 */
 		void beginWrite();
+		
+		/** Write character in socket
+			@param c			Character
+			@return size
+		 */
 		size_t write(uint8_t c);
+		
+		/** Write buffer in socket
+			@param buf			Buffer
+			@return size
+		 */
 		size_t write(const uint8_t *buf);
+		
+		/** Write buffer in socket with size
+			@param buf			Buffer		
+			@param sz			Buffer size
+			@return size
+		 */
 		size_t write(const uint8_t *buf, size_t sz);
+		
+		/** End write in socket
+		 */
 		void endWrite();
 
+		/** Stop server
+		 */
 		void stop();
 		
 		// we take this function out as IPAddress is complex to bring to

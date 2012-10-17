@@ -29,7 +29,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 The latest version of this library can always be found at
-http://www.tid.es
+https://github.com/BlueVia/Official-Arduino
 */
 #ifndef _GSM3SMSSERVICE_
 #define _GSM3SMSSERVICE_
@@ -40,36 +40,68 @@ http://www.tid.es
 class GSM3SMSService : public Stream 
 {
 	private:
+	
 		uint8_t flags;
 		
-		// Internal. This function takes responsibility to make
-		// synchronous the functions, if needed.
+		/** Makes synchronous the functions, if needed
+			@param returnvalue	Return value
+			@return returns 0 if last command is still executing, 1 success, >1 error
+		 */
 		int waitForAnswerIfNeeded(int returnvalue);
 		
 	public:
+	
+		/** Constructor
+			@param synch		Determines sync mode
+		 */
 		GSM3SMSService(bool synch=true);
 		
+		/** Write a character in SMS message
+			@param c			Character
+			@return size
+		 */
 		size_t write(uint8_t c);
+		
+		/** Begin a SMS to send it
+			@param to			Destination
+			@return error command if it exists
+		 */
 		int beginSMS(const char* to);
 		
-		// Returns 0 if last command is still executing
-		// 1 if success
-		// >1 if error 
+		/** Get last command status
+			@return returns 0 if last command is still executing, 1 success, >1 error
+		 */
 		int ready();
+		
+		/** End SMS
+			@return error command if it exists
+		 */
 		int endSMS();
 		
-		// Number of bytes in a received SMS
+		/** Check if SMS available and prepare it to be read
+			@return number of bytes in a received SMS
+		 */
 		int available();
-		// Give remote sender number.
+		
+		/** Read sender number phone
+			@param number		Buffer for save number phone
+			@param nlength		Buffer length
+			@return 1 success, >1 error
+		 */
 		int remoteNumber(char* number, int nlength); 
 		
-		// Read byte. zero if not on message or message is over
+		/** Read one char for SMS buffer (advance circular buffer)
+			@return byte
+		 */
 		int read();
 		
-		// Read byte but do not advance
+		/** Read a byte but do not advance the buffer header (circular buffer)
+			@return byte
+		 */
 		int peek();
 		
-		// Finish reading the current packet
+		/** Delete the SMS from Modem memory and proccess answer
+		 */
 		void flush();
 
 };

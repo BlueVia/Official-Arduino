@@ -1,4 +1,3 @@
-
 /*
   Web client
  
@@ -12,26 +11,25 @@
  */
 
 // libraries
-#include <GSM3MobileClientService.h>
-#include <GSM3ShieldV1ClientProvider.h>
-#include <GSM3ShieldV1AccessProvider.h>
-#include <GSM3ShieldV1DataNetworkProvider.h>
+#include <GSM.h>
+
+// PIN Number
+#define PINNUMBER ""
 
 // APN data
-#define GPRS_APN       "m2mkit.telefonica.com" // replace your GPRS APN
+#define GPRS_APN       "bluevia.movistar.es" // replace your GPRS APN
 #define GPRS_LOGIN     ""    // replace with your GPRS login
 #define GPRS_PASSWORD  "" // replace with your GPRS password
 
 // initialize the library instance
-GSM3MobileClientService client;
-GSM3ShieldV1ClientProvider s1client;
-GSM3ShieldV1DataNetworkProvider gprs;
-GSM3ShieldV1AccessProvider gsmAccess;     // include a 'true' parameter for debug enabled
+GSMClient client;
+GPRS gprs;
+GSM gsmAccess; // include a 'true' parameter for debug enabled
 
 // This example downloads the URL "http://arduino.cc/"
 
 // URL, path & port (for example: arduino.cc)
-char url[] = "arduino.cc";
+char server[] = "arduino.cc";
 char path[] = "/";
 int port = 80; // 80 for HTTP
 
@@ -47,7 +45,7 @@ void setup()
   // If your SIM has PIN, pass it as a parameter of begin() in quotes
   while(notConnected)
   {
-    if((gsmAccess.begin()==GSM_READY) &
+    if((gsmAccess.begin(PINNUMBER)==GSM_READY) &
         (gprs.attachGPRS(GPRS_APN, GPRS_LOGIN, GPRS_PASSWORD)==GPRS_READY))
       notConnected = false;
     else
@@ -60,7 +58,7 @@ void setup()
   Serial.println("connecting...");
 
   // if you get a connection, report back via serial:
-  if (client.connect(url, port))
+  if (client.connect(server, port))
   {
     Serial.println("connected");
     // Make a HTTP request:

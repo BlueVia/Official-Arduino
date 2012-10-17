@@ -1,9 +1,5 @@
 #include <GSM3ShieldV1SMSProvider.h>
 #include <Arduino.h>
-
-PROGMEM prog_char _command_CMGL[]={"AT+CMGL=\"REC UNREAD\",1"};
-PROGMEM prog_char _command_SMS[]={"AT+CMGS=\""};
-PROGMEM prog_char _command_CMGD[]={"AT+CMGD="};
 	
 GSM3ShieldV1SMSProvider::GSM3ShieldV1SMSProvider()
 {
@@ -31,7 +27,7 @@ void GSM3ShieldV1SMSProvider::beginSMSContinue()
 	switch (theGSM3ShieldV1ModemCore.getCommandCounter()) {
     case 1:
 		theGSM3ShieldV1ModemCore.setCommandCounter(2);
-		theGSM3ShieldV1ModemCore.genericCommand_rq(_command_SMS, false);
+		theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("AT+CMGS=\""), false);
 		theGSM3ShieldV1ModemCore.print(theGSM3ShieldV1ModemCore.getPhoneNumber());
 		theGSM3ShieldV1ModemCore.print("\"\r");
 		break;
@@ -105,7 +101,7 @@ void GSM3ShieldV1SMSProvider::availableSMSContinue()
 	//int msglength_aux;
 	switch (theGSM3ShieldV1ModemCore.getCommandCounter()) {
     case 1:	
-		theGSM3ShieldV1ModemCore.genericCommand_rq(_command_CMGL);
+		theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("AT+CMGL=\"REC UNREAD\",1"));
 		theGSM3ShieldV1ModemCore.setCommandCounter(2);
 		break;
 	case 2:
@@ -246,7 +242,7 @@ void GSM3ShieldV1SMSProvider::flushSMSContinue()
 	switch (theGSM3ShieldV1ModemCore.getCommandCounter()) {
     case 1:
 		theGSM3ShieldV1ModemCore.setCommandCounter(2);
-		theGSM3ShieldV1ModemCore.genericCommand_rq(_command_CMGD, false);
+		theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("AT+CMGD="), false);
 		theGSM3ShieldV1ModemCore.print(idSMS);
 		theGSM3ShieldV1ModemCore.print("\r");
 		break;

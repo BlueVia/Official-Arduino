@@ -29,7 +29,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 The latest version of this library can always be found at
-http://www.tid.es
+https://github.com/BlueVia/Official-Arduino
 */
 
 #ifndef __GSM3_SHIELDV1MODEMCORE__
@@ -45,7 +45,8 @@ http://www.tid.es
 class GSM3ShieldV1ModemCore : public GSM3SoftSerialMgr, public Print
 {
 	private:
-		//Phone number, used when calling, sending SMS and reading calling numbers
+		
+		// Phone number, used when calling, sending SMS and reading calling numbers
 		// Also PIN in modem configuration
 		// Also APN
 		// Also remote server
@@ -79,47 +80,139 @@ class GSM3ShieldV1ModemCore : public GSM3SoftSerialMgr, public Print
 		GSM3ShieldV1BaseProvider* UMProvider[UMPROVIDERS];
 		GSM3ShieldV1BaseProvider* activeProvider;
 		
+		// Private function for anage message
 		void manageMsgNow(byte from, byte to);
 		
 		unsigned long milliseconds;
 
 	public:
+	
+		/** Constructor */
 		GSM3ShieldV1ModemCore();
-		GSM3SoftSerial gss;
-
 		
-		// Getters and setters of the running commands
+		GSM3SoftSerial gss; // Direct access to modem
+		
+		/** Get phone number
+			@return phone number
+		 */
 		char *getPhoneNumber(){return phoneNumber;};
+		
+		/** Establish a new phone number
+			@param n			Phone number
+		 */
 		void setPhoneNumber(char *n){phoneNumber=n;};
 
+		/** Get port used
+			@return port
+		 */
 		int getPort(){return port;};
+		
+		/** Establish a new port for use
+			@param p			Port
+		 */
 		void setPort(int p){port=p;};
 
+		/** Get command error
+			@return command error
+		 */
 		uint8_t getCommandError(){return commandError;};
+		
+		/** Establish a command error
+			@param n			Command error
+		 */
 		void setCommandError(uint8_t n){commandError=n;};
 		
+		/** Get command counter
+			@return command counter
+		 */
 		uint8_t getCommandCounter(){return commandCounter;};
+		
+		/** Set command counter
+			@param c			Initial value
+		 */
 		void setCommandCounter(uint8_t c){commandCounter=c;};
 
+		/** Get ongoing command
+			@return command
+		 */
 		GSM3_commandType_e getOngoingCommand(){return ongoingCommand;};
+		
+		/** Set ongoing command
+			@param c			 New ongoing command
+		 */
 		void setOngoingCommand(GSM3_commandType_e c){ongoingCommand=c;};
+		
+		/** Open command
+			@param activeProvider	Active provider
+			@param c				Command for open
+		 */
 		void openCommand(GSM3ShieldV1BaseProvider* activeProvider, GSM3_commandType_e c);
+		
+		/** Close command
+			@param code			Close code
+		 */
 		void closeCommand(int code);
 
 		// These functions allow writing to the SoftwareSerial
 		// If debug is set, dump to the console
+		
+		/** Write a character in serial
+			@param c			Character
+			@return size
+		 */
 		size_t write(uint8_t c);
+		
+		/** Write PGM
+			@param str			Buffer for write
+			@param CR			Carriadge return adding automatically
+			@return size
+		 */
 		virtual size_t writePGM(PROGMEM prog_char str[], bool CR=true);
 		
+		/** Establish debug mode
+			@param db			Boolean that indicates debug on or off
+		 */
 		void setDebug(bool db){_debug=db;};
-						
+		
+		/** Generic response parser
+			@param rsp			Returns true if expected response exists
+			@param string		Substring expected in response
+			@param string2		Second substring expected in response
+			@return true if parsed correctly
+		 */		
 		bool genericParse_rsp(bool& rsp, char* string=0, char* string2=0);
+		
+		/** Generates a generic AT command request from PROGMEM prog_char buffer
+			@param str			Buffer with AT command
+			@param addCR		Carriadge return adding automatically
+		 */
 		void genericCommand_rq(PROGMEM prog_char str[], bool addCR=true);
+
+		/** Generates a generic AT command request from a simple char buffer
+			@param str			Buffer with AT command
+			@param addCR		Carriadge return adding automatically
+		 */
 		void genericCommand_rqc(const char* str, bool addCR=true);		
 		
+		/** Generates a generic AT command request from characters buffer
+			@param str			Buffer with AT command
+			@param addCR		Carriadge return adding automatically
+		 */
+		void genericCommand_rq(const char* str, bool addCR=true);		
+		
+		/** Returns the circular buffer
+			@return circular buffer
+		 */
 		inline GSM3CircularBuffer& theBuffer(){return gss.cb;};
 
+		/** Establish a new network status
+			@param status		Network status
+		 */
 		inline void setStatus(GSM3_NetworkStatus_t status) { _status = status; };
+		
+		/** Returns actual network status
+			@return network status
+		 */
 		inline GSM3_NetworkStatus_t getStatus() { return _status; };
 		
 		/** Register provider as willing to receive unsolicited messages
@@ -155,6 +248,9 @@ class GSM3ShieldV1ModemCore : public GSM3SoftSerialMgr, public Print
 		*/		
 		unsigned long takeMilliseconds();
 		
+		/** Delay for interrupts
+			@param milliseconds		Delay time in milliseconds
+		 */
 		void delayInsideInterrupt(unsigned long milliseconds);
 
 };

@@ -23,10 +23,10 @@
  */
 
 // libraries
-#include <GSM3ShieldV1BandManagement.h>
+#include <GSM.h>
 
 // initialize the library instance
-GSM3ShieldV1BandManagement bandManager;
+GSMBand bandManager;
 
 void setup()
 {

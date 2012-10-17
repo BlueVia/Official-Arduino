@@ -1,7 +1,5 @@
 #include <GSM3ShieldV1BandManagement.h>
 
-
-
 GSM3ShieldV1BandManagement::GSM3ShieldV1BandManagement(bool trace): modem(trace)
 {
 	quectelStrings[UNDEFINED]="";
@@ -19,7 +17,6 @@ GSM3ShieldV1BandManagement::GSM3ShieldV1BandManagement(bool trace): modem(trace)
 	bandNames[EGSM_DCS_MODE]="E-GSM(900)+DCS(1800) ex: Europe";
 	bandNames[GSM850_PCS_MODE]="GSM(850)+PCS(1900) Ex: USA, South Am.";
 	bandNames[GSM850_EGSM_DCS_PCS_MODE]="GSM(850)+E-GSM(900)+DCS(1800)+PCS(1900)";	
-	
 }
 
 GSM3_NetworkStatus_t GSM3ShieldV1BandManagement::begin()

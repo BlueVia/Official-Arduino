@@ -21,15 +21,15 @@
  */
 
 // libraries
-#include <GSM3MobileClientService.h>
-#include <GSM3ShieldV1AccessProvider.h>
-#include <GSM3ShieldV1DataNetworkProvider.h>
-#include <GSM3ShieldV1ClientProvider.h>
+#include <GSM.h>
 
 // Cosm Client data
 #define APIKEY         "YOUR API KEY GOES HERE"  // replace your cosm api key here
 #define FEEDID         00000                     // replace your feed ID
 #define USERAGENT      "My Project"              // user agent is the project name
+
+// PIN Number
+#define PINNUMBER ""
 
 // APN data
 #define GPRS_APN       "GPRS_APN"  // replace your GPRS APN
@@ -37,10 +37,9 @@
 #define GPRS_PASSWORD  "password"  // replace with your GPRS password
 
 // initialize the library instance:
-GSM3MobileClientService client;
-GSM3ShieldV1ClientProvider s1client;
-GSM3ShieldV1DataNetworkProvider gprs;
-GSM3ShieldV1AccessProvider gsmAccess; // include a 'true' parameter for debug enabled
+GSMClient client;
+GPRS gprs;
+GSM gsmAccess; // include a 'true' parameter for debug enabled
 
 // if you don't want to use DNS (and reduce your sketch size)
 // use the numeric IP instead of the name for the server:
@@ -63,7 +62,7 @@ void setup()
   // If your SIM has PIN, pass it as a parameter of begin() in quotes
   while(notConnected)
   {
-    if((gsmAccess.begin()==GSM_READY) &
+    if((gsmAccess.begin(PINNUMBER)==GSM_READY) &
         (gprs.attachGPRS(GPRS_APN, GPRS_LOGIN, GPRS_PASSWORD)==GPRS_READY))
       notConnected = false;
     else

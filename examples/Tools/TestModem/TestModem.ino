@@ -10,10 +10,10 @@
  */
 
 // libraries
-#include <GSM3ShieldV1ModemVerification.h>
+#include <GSM.h>
 
 // modem verification object
-GSM3ShieldV1ModemVerification modemTest;
+GSMModem modemTest;
 
 // IMEI variable
 String IMEI = "";

@@ -16,14 +16,14 @@
  */
 
 // libraries
-#include <GSM3VoiceCallService.h>
-#include <GSM3ShieldV1AccessProvider.h>
-#include <GSM3ShieldV1VoiceProvider.h>
+#include <GSM.h>
+
+// PIN Number
+#define PINNUMBER ""
 
 // initialize the library instance
-GSM3ShieldV1AccessProvider gsmAccess; // include a 'true' parameter for debug enabled
-GSM3VoiceCallService vcs;
-GSM3ShieldV1VoiceProvider gsv;
+GSM gsmAccess; // include a 'true' parameter for debug enabled
+GSMVoiceCall vcs;
 
 char numtel[20];           // buffer for the incoming call
 
@@ -40,7 +40,7 @@ void setup()
   // If your SIM has PIN, pass it as a parameter of begin() in quotes
   while(notConnected)
   {
-    if(gsmAccess.begin()==GSM_READY)
+    if(gsmAccess.begin(PINNUMBER)==GSM_READY)
       notConnected = false;
     else
     {

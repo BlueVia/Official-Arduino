@@ -31,21 +31,38 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 The latest version of this library can always be found at
 https://github.com/BlueVia/Official-Arduino
 */
+#ifndef _GSM3SIMPLIFIERFILE_
+#define _GSM3SIMPLIFIERFILE_
+
+// This file simplifies the use of the GSM3 library
+// First we include everything. 
+
+#include <GSM3CircularBuffer.h>
+#include <GSM3MobileCellManagement.h>
+#include <GSM3MobileClientService.h>
 #include <GSM3MobileNetworkRegistry.h>
+#include <GSM3MobileServerService.h>
+#include <GSM3ShieldV1AccessProvider.h>
+#include <GSM3ShieldV1BandManagement.h>
+#include <GSM3ShieldV1ClientProvider.h>
+#include <GSM3ShieldV1DataNetworkProvider.h>
+#include <GSM3ShieldV1ModemVerification.h>
+#include <GSM3ShieldV1PinManagement.h>
+#include <GSM3ShieldV1ScanNetworks.h>
+#include <GSM3SMSService.h>
+#include <GSM3VoiceCallService.h>
 
-GSM3MobileNetworkRegistry::GSM3MobileNetworkRegistry()
-{
-	theProvider=0;
-};
+#define GSM GSM3ShieldV1AccessProvider
+#define GPRS GSM3ShieldV1DataNetworkProvider
+#define GSMClient GSM3MobileClientService
+#define GSMServer GSM3MobileServerService
+#define GSMVoiceCall GSM3VoiceCallService
+#define GSM_SMS GSM3SMSService
 
-void GSM3MobileNetworkRegistry::registerMobileNetworkProvider(GSM3MobileNetworkProvider* provider)
-{
-	theProvider=provider;
-}
+#define GSMPin GSM3ShieldV1PinManagement
+#define GSMModem GSM3ShieldV1ModemVerification
+#define GSMCell GSM3CellManagement
+#define GSMBand GSM3ShieldV1BandManagement
+#define GSMScanner GSM3ShieldV1ScanNetworks
 
-GSM3MobileNetworkProvider* GSM3MobileNetworkRegistry::getMobileNetworkProvider()
-{
-	return theProvider;
-}
-
-GSM3MobileNetworkRegistry theMobileNetworkRegistry;
+#endif

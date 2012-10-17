@@ -31,21 +31,23 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 The latest version of this library can always be found at
 https://github.com/BlueVia/Official-Arduino
 */
-#include <GSM3MobileNetworkRegistry.h>
+#ifndef _GSM3MOBILECELLMANAGEMENT_
+#define _GSM3MOBILECELLMANAGEMENT_
 
-GSM3MobileNetworkRegistry::GSM3MobileNetworkRegistry()
+#include <Arduino.h>
+
+class GSM3MobileCellManagement
 {
-	theProvider=0;
+	public:
+		
+		virtual inline int getLocation() {return 0;};
+		
+		virtual inline int getICCID() {return 0;};
+		
+		/** Get last command status
+			@return returns 0 if last command is still executing, 1 success, >1 error
+		 */
+		virtual int ready()=0;
 };
 
-void GSM3MobileNetworkRegistry::registerMobileNetworkProvider(GSM3MobileNetworkProvider* provider)
-{
-	theProvider=provider;
-}
-
-GSM3MobileNetworkProvider* GSM3MobileNetworkRegistry::getMobileNetworkProvider()
-{
-	return theProvider;
-}
-
-GSM3MobileNetworkRegistry theMobileNetworkRegistry;
+#endif

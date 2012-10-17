@@ -2,20 +2,9 @@
 #include <GSM3ShieldV1ModemCore.h>
 #include <Arduino.h>
 
-//PROGMEM prog_char _command_MonoQILOCIP[]={"AT+QILOCIP"};
-PROGMEM prog_char _command_MonoQILPORT[]={"AT+QILPORT=\"TCP\","};
-PROGMEM prog_char _command_MonoQISERVER[]={"AT+QISERVER"};
-
-PROGMEM prog_char _LOC_MonoCLOSED[]={"CLOSED\r\n"};
-PROGMEM prog_char _LOC_MonoQIRDI[]={"+QIRDI: 0,"};
-PROGMEM prog_char _LOC_MonoREMOTE[]={"REMOTE IP"};
-PROGMEM prog_char _LOC_MonoCONNECT[]={"CONNECT\r\n"};
-
-
 GSM3ShieldV1ServerProvider::GSM3ShieldV1ServerProvider()
 {
 	theGSM3MobileServerProvider=this;
-
 };
 
 //Response management.
@@ -59,7 +48,7 @@ void GSM3ShieldV1ServerProvider::connectTCPServerContinue()
 	switch (theGSM3ShieldV1ModemCore.getCommandCounter()) {
 	case 1:
 		//"AT+QILOCIP."
-		theGSM3ShieldV1ModemCore.genericCommand_rq("AT+QILOCIP");
+		theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("AT+QILOCIP"));
 		theGSM3ShieldV1ModemCore.setCommandCounter(2);
 		break;
 	case 2:
@@ -75,7 +64,7 @@ void GSM3ShieldV1ServerProvider::connectTCPServerContinue()
 			{
 				// Great. Go for the next step
 				// AT+QILPORT
-				theGSM3ShieldV1ModemCore.genericCommand_rq(_command_MonoQILPORT,false);
+				theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("AT+QILPORT=\"TCP\","),false);
 				theGSM3ShieldV1ModemCore.print(	theGSM3ShieldV1ModemCore.getPort());
 				theGSM3ShieldV1ModemCore.print('\r');
 				theGSM3ShieldV1ModemCore.setCommandCounter(3);
@@ -92,7 +81,7 @@ void GSM3ShieldV1ServerProvider::connectTCPServerContinue()
 				// OK received
 				// Great. Go for the next step
 				// AT+QISERVER
-				theGSM3ShieldV1ModemCore.genericCommand_rq(_command_MonoQISERVER,true);
+				theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("AT+QISERVER"),true);
 				theGSM3ShieldV1ModemCore.setCommandCounter(4);
 			}
 			else theGSM3ShieldV1ModemCore.closeCommand(3);
@@ -179,7 +168,7 @@ bool GSM3ShieldV1ServerProvider::recognizeUnsolicitedEvent(byte oldTail)
 	char auxLocate [15];
 	
 	//REMOTE SOCKET CLOSED.
-	prepareAuxLocate(_LOC_MonoCLOSED, auxLocate);
+	prepareAuxLocate(PSTR("CLOSED\r\n"), auxLocate);
 	if(theGSM3ShieldV1ModemCore.gss.cb.locate(auxLocate))
 	{
 		//To detect remote socket closed for example inside socket data.
@@ -188,7 +177,7 @@ bool GSM3ShieldV1ServerProvider::recognizeUnsolicitedEvent(byte oldTail)
 	
 	
 	//REMOTE SOCKET ACCEPTED.
-	prepareAuxLocate(_LOC_MonoCONNECT, auxLocate);
+	prepareAuxLocate(PSTR("CONNECT\r\n"), auxLocate);
 	if(theGSM3ShieldV1ModemCore.gss.cb.locate(auxLocate))
 	{
 		//To detect remote socket closed for example inside socket data.

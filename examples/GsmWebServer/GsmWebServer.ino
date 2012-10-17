@@ -13,25 +13,21 @@
  */
 
 // libraries
-#include <GSM3MobileServerService.h>
-#include <GSM3ShieldV1ServerProvider.h>
-#include <GSM3MobileClientService.h>
-#include <GSM3ShieldV1ClientProvider.h>
-#include <GSM3ShieldV1AccessProvider.h>
-#include <GSM3ShieldV1DataNetworkProvider.h>
+#include <GSM.h>
+
+// PIN Number
+#define PINNUMBER ""
 
 // APN data
 #define GPRS_APN       "GPRS_APN" // replace your GPRS APN
 #define GPRS_LOGIN     "login"    // replace with your GPRS login
 #define GPRS_PASSWORD  "password" // replace with your GPRS password
 
+
 // initialize the library instance
-GSM3MobileClientService client;
-GSM3ShieldV1ClientProvider s1client;
-GSM3ShieldV1DataNetworkProvider gprs;
-GSM3ShieldV1AccessProvider gsmAccess;     // include a 'true' parameter for debug enabled
-GSM3MobileServerService server(80); // port 80 (http default)
-GSM3ShieldV1ServerProvider s1server;
+GPRS gprs;
+GSM gsmAccess;     // include a 'true' parameter for debug enabled
+GSMServer server(80); // port 80 (http default)
 
 // timeout
 const unsigned long __TIMEOUT__ = 10*1000;
@@ -48,7 +44,7 @@ void setup()
   // If your SIM has PIN, pass it as a parameter of begin() in quotes
   while(notConnected)
   {
-    if((gsmAccess.begin()==GSM_READY) &
+    if((gsmAccess.begin(PINNUMBER)==GSM_READY) &
         (gprs.attachGPRS(GPRS_APN, GPRS_LOGIN, GPRS_PASSWORD)==GPRS_READY))
       notConnected = false;
     else
@@ -62,26 +58,20 @@ void setup()
   
   // start server
   server.begin();
-  waitForResponseServer();
   
   //Get IP.
   IPAddress LocalIP = gprs.getIPAddress();
-  if (!waitForResponseServer())
-  {
-      Serial.println("Couldn't get server IP address");
-      while(true);
-  } 
-  else
-  {
-      Serial.println("Server IP address=");
-      Serial.println(LocalIP);
-  }
+  Serial.println("Server IP address=");
+  Serial.println(LocalIP);
 }
 
 void loop() {
 
+
   // listen for incoming clients
   GSM3MobileClientService client = server.available();
+
+
 
   if (client)
   {  
@@ -89,7 +79,7 @@ void loop() {
     {
       if (client.available())
       {
-        Serial.println("available data socket.");
+        Serial.println("Receiving request!");
         bool sendResponse = false;
         while(char c=client.read()) {
           if (c == '\n') sendResponse = true;
@@ -113,30 +103,13 @@ void loop() {
             client.println("<br />");       
           }
           client.println("</html>");
+          //necessary delay
+          delay(1000);
+          client.stop();
         }
       }
-      //necessary delay
-      delay(100);
     }
-    
-    // give the web browser time to receive the data
-   delay(1);
-
-    // close the connection:
-    client.stop();
   }
 }
 
-/*
-  Wait for response network server
-*/
-bool waitForResponseServer() {
-  unsigned long m=millis();
-  while(((millis()-m)< __TIMEOUT__ )&&(server.ready()==0)) {
-    // wait for a response from the modem:
-    delay(1000);
-  } 
-  if (server.ready()==1) return true;
-  else return false;
-}
 

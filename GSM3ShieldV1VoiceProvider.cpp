@@ -1,18 +1,6 @@
 #include <GSM3ShieldV1VoiceProvider.h>
 
-PROGMEM prog_char _command_ATD[]={"ATD"};
-PROGMEM prog_char _command_ATH[]={"ATH"};
-PROGMEM prog_char _command_ATA[]={"ATA"};
-PROGMEM prog_char _command_CLCC[]={"AT+CLCC"};
-
-PROGMEM prog_char _LOC_RING[]={"RING"};
-PROGMEM prog_char _LOC_COLP[]={"+COLP:"};
-PROGMEM prog_char _LOC_CARRIER[]={"NO CARRIER"};
-PROGMEM prog_char _LOC_BUSY[]={"BUSY"};
-PROGMEM prog_char _LOC_CLIP[]={"+CLIP:"};
-
-
- GSM3ShieldV1VoiceProvider::GSM3ShieldV1VoiceProvider()
+GSM3ShieldV1VoiceProvider::GSM3ShieldV1VoiceProvider()
  {
 	phonelength=0;
 	theGSM3MobileVoiceProvider=this;
@@ -22,7 +10,7 @@ PROGMEM prog_char _LOC_CLIP[]={"+CLIP:"};
 //Voice Call main function.
 int GSM3ShieldV1VoiceProvider::voiceCall(const char* to)
 {
-	theGSM3ShieldV1ModemCore.genericCommand_rq(_command_ATD,false);
+	theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("ATD"),false);
 	theGSM3ShieldV1ModemCore.print(to);
 	theGSM3ShieldV1ModemCore.print(";\r");
 	setvoiceCallStatus(CALLING);
@@ -51,7 +39,7 @@ void GSM3ShieldV1VoiceProvider::retrieveCallingNumberContinue()
 	//int msglength_aux;
 	switch (theGSM3ShieldV1ModemCore.getCommandCounter()) {
     case 1:	
-		theGSM3ShieldV1ModemCore.genericCommand_rq(_command_CLCC);
+		theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("AT+CLCC"));
 		theGSM3ShieldV1ModemCore.setCommandCounter(2);
 		break;
 	case 2:
@@ -92,7 +80,7 @@ void GSM3ShieldV1VoiceProvider::answerCallContinue()
 	switch (theGSM3ShieldV1ModemCore.getCommandCounter()) {
     case 1:
 		// ATA ;
-		theGSM3ShieldV1ModemCore.genericCommand_rq(_command_ATA);
+		theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("ATA"));
 		theGSM3ShieldV1ModemCore.setCommandCounter(2);
 		break;
 	case 2:
@@ -126,7 +114,7 @@ void GSM3ShieldV1VoiceProvider::hangCallContinue()
 	switch (theGSM3ShieldV1ModemCore.getCommandCounter()) {
     case 1:
 		//ATH
-		theGSM3ShieldV1ModemCore.genericCommand_rq(_command_ATH);
+		theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("ATH"));
 		theGSM3ShieldV1ModemCore.setCommandCounter(2);
 		break;
 	case 2:
@@ -165,7 +153,7 @@ bool GSM3ShieldV1VoiceProvider::recognizeUnsolicitedEvent(byte oldTail)
 	int nlength;
 	char auxLocate [15];
 	//RING.
-	prepareAuxLocate(_LOC_RING, auxLocate);
+	prepareAuxLocate(PSTR("RING"), auxLocate);
 	if(theGSM3ShieldV1ModemCore.theBuffer().locate(auxLocate))
 	{
 		// RING
@@ -175,7 +163,7 @@ bool GSM3ShieldV1VoiceProvider::recognizeUnsolicitedEvent(byte oldTail)
 	}
 	
 	//CALL ACEPTED.
-	prepareAuxLocate(_LOC_COLP, auxLocate);
+	prepareAuxLocate(PSTR("+COLP:"), auxLocate);
 	if(theGSM3ShieldV1ModemCore.theBuffer().locate(auxLocate))
 	{
 		//DEBUG
@@ -186,7 +174,7 @@ bool GSM3ShieldV1VoiceProvider::recognizeUnsolicitedEvent(byte oldTail)
 	}	
 	
 	//NO CARRIER.
-	prepareAuxLocate(_LOC_CARRIER, auxLocate);
+	prepareAuxLocate(PSTR("NO CARRIER"), auxLocate);
 	if(theGSM3ShieldV1ModemCore.theBuffer().locate(auxLocate))
 	{
 		//DEBUG
@@ -197,7 +185,7 @@ bool GSM3ShieldV1VoiceProvider::recognizeUnsolicitedEvent(byte oldTail)
 	}
 	
 	//BUSY.
-	prepareAuxLocate(_LOC_BUSY, auxLocate);
+	prepareAuxLocate(PSTR("BUSY"), auxLocate);
 	if(theGSM3ShieldV1ModemCore.theBuffer().locate(auxLocate))
 	{
 		//DEBUG	
@@ -208,7 +196,7 @@ bool GSM3ShieldV1VoiceProvider::recognizeUnsolicitedEvent(byte oldTail)
 	}	
 	
 	//CALL RECEPTION.
-	prepareAuxLocate(_LOC_CLIP, auxLocate);
+	prepareAuxLocate(PSTR("+CLIP:"), auxLocate);
 	if(theGSM3ShieldV1ModemCore.theBuffer().locate(auxLocate))
 	{
 		theGSM3ShieldV1ModemCore.theBuffer().flush();

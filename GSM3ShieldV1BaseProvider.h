@@ -29,7 +29,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 The latest version of this library can always be found at
-http://www.tid.es
+https://github.com/BlueVia/Official-Arduino
 */
 #ifndef _GSM3SHIELDV1BASEPROVIDER_
 #define _GSM3SHIELDV1BASEPROVIDER_
@@ -39,19 +39,33 @@ http://www.tid.es
 enum GSM3_commandType_e { XON, NONE, MODEMCONFIG, ALIVETEST, BEGINSMS, ENDSMS, AVAILABLESMS, FLUSHSMS,
 	VOICECALL, ANSWERCALL, HANGCALL, RETRIEVECALLINGNUMBER, 
 	ATTACHGPRS, DETACHGPRS, CONNECTTCPCLIENT, DISCONNECTTCP, BEGINWRITESOCKET, ENDWRITESOCKET, 
-	AVAILABLESOCKET, FLUSHSOCKET, CONNECTSERVER, GETIP, GETCONNECTSTATUS}; 
+	AVAILABLESOCKET, FLUSHSOCKET, CONNECTSERVER, GETIP, GETCONNECTSTATUS, GETLOCATION, GETICCID}; 
 
 class GSM3ShieldV1BaseProvider
 {
 	public:
 
-		
+	/** Get last command status
+		@return Returns 0 if last command is still executing, 1 success, >1 error
+	*/
 	int ready();
 
-	// This function locates strings from PROGMEM in the buffer
+	/** This function locates strings from PROGMEM in the buffer
+		@param str			PROGMEN
+		@param auxLocate	Buffer where to locate strings
+	*/
 	void prepareAuxLocate(PROGMEM prog_char str[], char auxLocate[]);
 
+	/** Manages modem response
+		@param from 		Initial byte of buffer
+		@param to 			Final byte of buffer
+	*/
 	virtual void manageResponse(byte from, byte to);
+	
+	/** Recognize URC
+		@param from		
+		@return true if successful (default: false)
+	*/		
 	virtual bool recognizeUnsolicitedEvent(byte from){return false;};
 
 };

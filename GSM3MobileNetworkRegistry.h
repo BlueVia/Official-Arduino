@@ -29,7 +29,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 The latest version of this library can always be found at
-http://www.tid.es
+https://github.com/BlueVia/Official-Arduino
 */
 #ifndef _GSM3MOBILENETWORKREGISTRY_
 #define _GSM3MOBILENETWORKREGISTRY_
@@ -38,13 +38,23 @@ http://www.tid.es
 class GSM3MobileNetworkRegistry
 {
 	private:
-	GSM3MobileNetworkProvider* theProvider;
+		
+		GSM3MobileNetworkProvider* theProvider; // Network provider
 
 	public:
 	
-	GSM3MobileNetworkRegistry();
-	void registerMobileNetworkProvider(GSM3MobileNetworkProvider* provider);
-	GSM3MobileNetworkProvider* getMobileNetworkProvider();
+		/** Constructor */
+		GSM3MobileNetworkRegistry();
+		
+		/** Register in mobile network provider
+			@param provider			Provider
+		 */
+		void registerMobileNetworkProvider(GSM3MobileNetworkProvider* provider);
+			
+		/** Returns network provider object pointer
+			@return mobile network provider
+		 */
+		GSM3MobileNetworkProvider* getMobileNetworkProvider();
 	
 };
 

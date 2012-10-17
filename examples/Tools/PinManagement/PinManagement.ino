@@ -10,10 +10,10 @@
  */
 
 // libraries
-#include <GSM3ShieldV1PinManagement.h>
+#include <GSM.h>
 
 // pin manager object
-GSM3ShieldV1PinManagement pinManager;
+GSMPin pinManager;
 
 // save input in serial by user
 String user_input = "";

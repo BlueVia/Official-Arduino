@@ -1,18 +1,7 @@
 #include <GSM3ShieldV1MultiClientProvider.h>
 #include <GSM3ShieldV1ModemCore.h>
 
-PROGMEM prog_char _command_MultiQIRD[]={"AT+QIRD=0,"};
-PROGMEM prog_char _command_MultiQIDNSIP[]={"AT+QIDNSIP="};
-PROGMEM prog_char _command_MultiQIOPEN[]={"AT+QIOPEN="};
-PROGMEM prog_char _command_MultiCONNECTOK[]={"CONNECT OK"};
-PROGMEM prog_char _command_MultiQISRVC[]={"AT+QISRVC="};
-PROGMEM prog_char _command_MultiQICLOSE[]={"AT+QICLOSE="};
-PROGMEM prog_char _command_MultiPLUSQIRD[]={"+QIRD:"};
-PROGMEM prog_char _command_MultiQISEND[]={"AT+QISEND="};
-
-
-
-
+char _command_MultiQISRVC[] PROGMEM = "AT+QISRVC=";
 
 #define __TOUTFLUSH__ 10000
 
@@ -92,7 +81,7 @@ void GSM3ShieldV1MultiClientProvider::connectTCPClientContinue()
 
 	switch (theGSM3ShieldV1ModemCore.getCommandCounter()) {
 	case 1:
-		theGSM3ShieldV1ModemCore.genericCommand_rq(_command_MultiQIDNSIP, false);
+		theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("AT+QIDNSIP="), false);
 		if ((theGSM3ShieldV1ModemCore.getPhoneNumber()!=0)&&
 			((*(theGSM3ShieldV1ModemCore.getPhoneNumber())<'0')||((*(theGSM3ShieldV1ModemCore.getPhoneNumber())>'9'))))
 		{
@@ -113,7 +102,7 @@ void GSM3ShieldV1MultiClientProvider::connectTCPClientContinue()
 			if(resp)
 			{				
 				// AT+QIOPEN
-				theGSM3ShieldV1ModemCore.genericCommand_rq(_command_MultiQIOPEN,false);
+				theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("AT+QIOPEN="),false);
 				theGSM3ShieldV1ModemCore.print(idSocket);
 				theGSM3ShieldV1ModemCore.print(",\"TCP\",\"");
 				if(theGSM3ShieldV1ModemCore.getPhoneNumber()!=0)
@@ -149,7 +138,7 @@ void GSM3ShieldV1MultiClientProvider::connectTCPClientContinue()
 		break;
 	case 4:
 		char auxLocate [12];
-		prepareAuxLocate(_command_MultiCONNECTOK, auxLocate);
+		prepareAuxLocate(PSTR("CONNECT OK"), auxLocate);
 		if(theGSM3ShieldV1ModemCore.genericParse_rsp(resp,auxLocate))
 	    {
 			// Response received
@@ -216,7 +205,7 @@ void GSM3ShieldV1MultiClientProvider::disconnectTCPContinue()
 		if(resp)
 		{
 			// Send QICLOSE command
-			theGSM3ShieldV1ModemCore.genericCommand_rq(_command_MultiQICLOSE,false);
+			theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("AT+QICLOSE="),false);
 			theGSM3ShieldV1ModemCore.print(idSocket);
 			theGSM3ShieldV1ModemCore.print('\r');
 			theGSM3ShieldV1ModemCore.setCommandCounter(3);
@@ -271,7 +260,7 @@ void GSM3ShieldV1MultiClientProvider::beginWriteSocketContinue()
 			if(resp)
 			{
 				// AT+QISEND
-				theGSM3ShieldV1ModemCore.genericCommand_rq(_command_MultiQISEND, false);
+				theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("AT+QISEND="), false);
 				theGSM3ShieldV1ModemCore.print(idSocket);
 				theGSM3ShieldV1ModemCore.print('\r');
 				theGSM3ShieldV1ModemCore.setCommandCounter(3);
@@ -367,7 +356,7 @@ void GSM3ShieldV1MultiClientProvider::availableSocketContinue()
 
 	switch (theGSM3ShieldV1ModemCore.getCommandCounter()) {
 	case 1:
-		theGSM3ShieldV1ModemCore.genericCommand_rq(_command_MultiQIRD,false);
+		theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("AT+QIRD=0,"),false);
 		if (client1_server0) 
 			theGSM3ShieldV1ModemCore.print('1');
 		else 
@@ -404,7 +393,7 @@ void GSM3ShieldV1MultiClientProvider::availableSocketContinue()
 bool GSM3ShieldV1MultiClientProvider::parseQIRD_head(bool& rsp)
 {
 	char _qird [8];
-	prepareAuxLocate( _command_MultiPLUSQIRD, _qird);
+	prepareAuxLocate(PSTR("+QIRD:"), _qird);
 	fullBufferSocket = (theGSM3ShieldV1ModemCore.theBuffer().availableBytes()<3);
 	if(theGSM3ShieldV1ModemCore.theBuffer().locate(_qird)) 
 	{		

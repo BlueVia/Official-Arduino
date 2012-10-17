@@ -1,17 +1,6 @@
 #include <GSM3ShieldV1ClientProvider.h>
 #include <GSM3ShieldV1ModemCore.h>
 
-PROGMEM prog_char _command_QIDNSIP[]={"AT+QIDNSIP="};
-PROGMEM prog_char _command_QIOPEN[]={"AT+QIOPEN="};
-PROGMEM prog_char _command_CONNECTOK[]={"CONNECT\r\n"};
-PROGMEM prog_char _command_CLOSED[]={"CLOSED"};
-PROGMEM prog_char _command_CLOSEOK[]={"CLOSE OK"};
-PROGMEM prog_char _command_QISRVC[]={"AT+QISRVC="};
-//PROGMEM prog_char _command_QICLOSE[]={"+++AT+QICLOSE"};
-PROGMEM prog_char _command_QICLOSE[]={"AT+QICLOSE"};
-
-
-
 GSM3ShieldV1ClientProvider::GSM3ShieldV1ClientProvider()
 {
 	theGSM3MobileClientProvider=this;
@@ -67,7 +56,7 @@ void GSM3ShieldV1ClientProvider::connectTCPClientContinue()
 
 	switch (theGSM3ShieldV1ModemCore.getCommandCounter()) {
 	case 1:
-		theGSM3ShieldV1ModemCore.genericCommand_rq(_command_QIDNSIP, false);
+		theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("AT+QIDNSIP="), false);
 		if ((theGSM3ShieldV1ModemCore.getPhoneNumber()!=0)&&
 			((*(theGSM3ShieldV1ModemCore.getPhoneNumber())<'0')||((*(theGSM3ShieldV1ModemCore.getPhoneNumber())>'9'))))
 		{
@@ -88,7 +77,7 @@ void GSM3ShieldV1ClientProvider::connectTCPClientContinue()
 			if(resp)
 			{				
 				// AT+QIOPEN
-				theGSM3ShieldV1ModemCore.genericCommand_rq(_command_QIOPEN,false);
+				theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("AT+QIOPEN="),false);
 				theGSM3ShieldV1ModemCore.print("\"TCP\",\"");
 				if(theGSM3ShieldV1ModemCore.getPhoneNumber()!=0)
 				{
@@ -123,7 +112,7 @@ void GSM3ShieldV1ClientProvider::connectTCPClientContinue()
 		break;
 	case 4:
 		char auxLocate [12];
-		prepareAuxLocate(_command_CONNECTOK, auxLocate);
+		prepareAuxLocate(PSTR("CONNECT\r\n"), auxLocate);
 		if(theGSM3ShieldV1ModemCore.genericParse_rsp(resp,auxLocate))
 	    {
 			// Response received
@@ -156,7 +145,7 @@ int GSM3ShieldV1ClientProvider::disconnectTCP(bool client1Server0, int id_socket
 		delay(1000);
 		theGSM3ShieldV1ModemCore.print("+++");
 		delay(1000);
-		theGSM3ShieldV1ModemCore.genericCommand_rq(_command_QICLOSE);
+		theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("AT+QICLOSE"));
 		theGSM3ShieldV1ModemCore.setStatus(GPRS_READY);
 	}
 	// Looks like it runs everytime, so we simply flush to death and go on
@@ -190,10 +179,10 @@ void GSM3ShieldV1ClientProvider::writeSocket(const char* buf)
 }
 
 //Write socket character function.
-void GSM3ShieldV1ClientProvider::writeSocket(char c)
+void GSM3ShieldV1ClientProvider::writeSocket(uint8_t c)
 {
 	if(theGSM3ShieldV1ModemCore.getStatus()==TRANSPARENT_CONNECTED)
-		theGSM3ShieldV1ModemCore.print(c);
+		theGSM3ShieldV1ModemCore.print((char)c);
 }
 
 //Write socket last chain main function.
@@ -273,7 +262,7 @@ void GSM3ShieldV1ClientProvider::flushSocketContinue()
 bool GSM3ShieldV1ClientProvider::recognizeUnsolicitedEvent(byte oldTail)
 {
 	char auxLocate [12];
-	prepareAuxLocate(_command_CLOSED, auxLocate);
+	prepareAuxLocate(PSTR("CLOSED"), auxLocate);
 
 	if((theGSM3ShieldV1ModemCore.getStatus()==TRANSPARENT_CONNECTED) & theGSM3ShieldV1ModemCore.theBuffer().chopUntil(auxLocate, false, false))
 	{

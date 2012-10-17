@@ -29,7 +29,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 The latest version of this library can always be found at
-http://www.tid.es
+https://github.com/BlueVia/Official-Arduino
 */
 #ifndef _GSM3SHIELDV1ACCESSPROVIDER_
 #define _GSM3SHIELDV1ACCESSPROVIDER_
@@ -42,26 +42,40 @@ class GSM3ShieldV1AccessProvider : public GSM3MobileAccessProvider, public GSM3S
 {
 	private:
 
-		//Config private functions.
+		/** Initialize main modem configuration
+			@param pin			PIN code
+			@return command error if exists
+		 */
 		int ModemConfiguration(char* pin);
+		
+		/** Continue to modem configuration function
+		 */
 		void ModemConfigurationContinue();
+		
+		/** Continue to check if modem alive function
+		 */
 		void isModemAliveContinue();
 		
 
 	public:
+	
+		/** Constructor
+			@param debug		Determines debug mode
+		 */
+		
 		GSM3ShieldV1AccessProvider(bool debug=false);
 		
 		/** Start the GSM/GPRS modem, attaching to the GSM network
-         @param pin 		SIM PIN number (4 digits in a string, example: "1234"). If 
-							NULL the SIM has no configured PIN.
-		 @param restart 	Restart the modem. Default is TRUE. The modem receives
-							a signal through the Ctrl/D7 pin. If it is shut down, it will
-							start-up. If it is running, it will restart. Takes up to 10 
-							seconds
-		 @param synchronous If TRUE the call only returns after the Start is complete 
-		                    or fails. If FALSE the call will return inmediately. You have
-							to call repeatedly ready() until you get a result. Default is TRUE.
-		 @return If synchronous, GSM3_NetworkStatus_t. If asynchronous, returns 0.
+			@param pin 			SIM PIN number (4 digits in a string, example: "1234"). If 
+								NULL the SIM has no configured PIN.
+			@param restart		Restart the modem. Default is TRUE. The modem receives
+								a signal through the Ctrl/D7 pin. If it is shut down, it will
+								start-up. If it is running, it will restart. Takes up to 10 
+								seconds
+			@param synchronous	If TRUE the call only returns after the Start is complete 
+								or fails. If FALSE the call will return inmediately. You have
+								to call repeatedly ready() until you get a result. Default is TRUE.
+			@return If synchronous, GSM3_NetworkStatus_t. If asynchronous, returns 0.
 		*/
 		GSM3_NetworkStatus_t begin(char* pin=0,bool restart=true, bool synchronous=true);
 		
@@ -80,6 +94,9 @@ class GSM3ShieldV1AccessProvider : public GSM3MobileAccessProvider, public GSM3S
 		*/
 		int ready(){return GSM3ShieldV1BaseProvider::ready();};
 		
+		/** Returns modem status
+			@return modem network status 
+		*/
 		inline GSM3_NetworkStatus_t getStatus(){return theGSM3ShieldV1ModemCore.getStatus();};
 
 		void manageResponse(byte from, byte to);
@@ -92,7 +109,6 @@ class GSM3ShieldV1AccessProvider : public GSM3MobileAccessProvider, public GSM3S
 		/** Start the modem (will not shut down if running)
 			@return 1 if success, >1 if error 
 		*/		
-
 		int HWstart();
 
 };

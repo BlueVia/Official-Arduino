@@ -29,7 +29,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 The latest version of this library can always be found at
-http://www.tid.es
+https://github.com/BlueVia/Official-Arduino
 */
 #ifndef __GSM3_MOBILESERVERPROVIDER__
 #define __GSM3_MOBILESERVERPROVIDER__
@@ -42,23 +42,48 @@ http://www.tid.es
 
 class GSM3MobileServerProvider
 {	
-		// Modem sockets status
+		/** Get socket status
+			@param s			Socket
+			@return modem status (true if connected)
+		 */
 		virtual bool getSocketAsServerModemStatus(int s)=0;
 		
 	public:
 		
+		/** minSocketAsServer
+			@return socket
+		 */
 		virtual int minSocketAsServer()=0;
+		
+		/** maxSocketAsServer
+			@return socket
+		 */
 		virtual int maxSocketAsServer()=0;
+		
+		/** Get last command status
+			@return returns 0 if last command is still executing, 1 success, >1 error
+		 */
 		virtual int ready()=0;
 		
+		/** Constructor */
 		GSM3MobileServerProvider(){};
 						
-		// Server socket functions
+		/** Connect server to TCP port
+			@param port			TCP port
+			@return	command error if exists
+		 */
 		virtual  int connectTCPServer(int port)=0;
 		//virtual  int getIP(char* LocalIP, int LocalIPlength)=0;
 				
-		// return -1 if no new socket has been occupied
+		/** Get new occupied socket as server
+			@return return -1 if no new socket has been occupied
+		 */
 		virtual int getNewOccupiedSocketAsServer()=0;
+		
+		/** Get socket status
+			@param socket		Socket
+			@return socket status (true if connected)
+		 */
 		virtual bool getStatusSocketAsServer(uint8_t socket)=0;
 		
 		// virtual int disconnectTCP(bool client1Server0, int idsocket)=0;

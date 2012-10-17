@@ -29,7 +29,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 The latest version of this library can always be found at
-http://www.tid.es
+https://github.com/BlueVia/Official-Arduino
 */
 #include "GSM3SoftSerial.h"
 #include <avr/interrupt.h>
@@ -44,6 +44,9 @@ http://www.tid.es
 
 #define __XON__ 0x11
 #define __XOFF__ 0x13
+
+#define _GSMSOFTSERIALFLAGS_ESCAPED_ 0x01
+#define _GSMSOFTSERIALFLAGS_SENTXOFF_ 0x02
 
 //
 // Lookup table
@@ -183,10 +186,34 @@ void GSM3SoftSerial::close()
 
 size_t GSM3SoftSerial::write(uint8_t c)
 {
-
 	if (_tx_delay == 0)
 		return 0;
 
+	// Characters to be escaped under XON/XOFF control with Quectel
+	if(c==0x11)
+	{
+		this->finalWrite(0x77);
+		return this->finalWrite(0xEE);
+	}
+
+	if(c==0x13)
+	{
+		this->finalWrite(0x77);
+		return this->finalWrite(0xEC);
+	}
+
+	if(c==0x77)
+	{
+		this->finalWrite(0x77);
+		return this->finalWrite(0x88);
+	}
+	
+	return this->finalWrite(c);
+}
+
+size_t GSM3SoftSerial::finalWrite(uint8_t c)
+{
+	
 	uint8_t oldSREG = SREG;
 	cli();  // turn off interrupts for a clean txmit
 
@@ -208,10 +235,7 @@ size_t GSM3SoftSerial::write(uint8_t c)
 	
 	SREG = oldSREG; // turn interrupts back on
 	tunedDelay(_tx_delay);
-			
-	if(c=='w')
-		this->write(0x88);		
-	
+				
 	return 1;
 }
 
@@ -343,19 +367,23 @@ void GSM3SoftSerial::recv()
 		}
 
 		if(fullbuffer&&(!capturado_fullbuffer))
-			{
-				tunedDelay(_rx_delay_intrabit);
-				tx_pin_write(HIGH);	
-			}
-
+		{
+			tunedDelay(_rx_delay_intrabit);
+			tx_pin_write(HIGH);	
+		}
+		
+		// So, we know the buffer is full, and we have sent a XOFF
 		if (fullbuffer) 
+		{
 			capturado_fullbuffer =1;
+			_flags |=_GSMSOFTSERIALFLAGS_SENTXOFF_;
+		}
 
 
 		// skip the stop bit
 		if (!fullbuffer) tunedDelay(_rx_delay_stopbit);
-		// Horrible things for Quectel XON/XOFF
-		if((d!=0x88) && (d!=255) && (d!=17))
+		
+		if(keepThisChar(&d))
 		{
 			cb.write(d);
 			if(firstByte)
@@ -364,6 +392,7 @@ void GSM3SoftSerial::recv()
 				thisHead=cb.getTail();
 			}
 		}
+		
 		
 		// This part is new. It is used to detect the end of a "paragraph"
 		// Caveat: the old fashion would let processor a bit of time between bytes, 
@@ -384,8 +413,6 @@ void GSM3SoftSerial::recv()
 	// If we find a line feed, we are at the end of a paragraph
 	// check!
 	
-
-
 	if (fullbuffer)
 	{
 		// And... go handle it!
@@ -422,13 +449,45 @@ void GSM3SoftSerial::recv()
 #endif
 }
 
-// TO-DO. All the XON/XOFF stuff has to be verified.
+bool GSM3SoftSerial::keepThisChar(uint8_t* c)
+{
+	// Horrible things for Quectel XON/XOFF
+	// 255 is the answer to a XOFF
+	// It comes just once
+	if((*c==255)&&(_flags & _GSMSOFTSERIALFLAGS_SENTXOFF_))
+	{
+		_flags ^= _GSMSOFTSERIALFLAGS_SENTXOFF_;
+		return false;
+	}
+
+	// 0x77, w, is the escape character
+	if(*c==0x77)
+	{
+		_flags |= _GSMSOFTSERIALFLAGS_ESCAPED_;
+		return false;
+	}
+	
+	// and these are the escaped codes
+	if(_flags & _GSMSOFTSERIALFLAGS_ESCAPED_)
+	{
+		if(*c==0xEE)
+			*c=0x11;
+		else if(*c==0xEC)
+			*c=0x13;
+		else if(*c==0x88)
+			*c=0x77;
+			
+		_flags ^= _GSMSOFTSERIALFLAGS_ESCAPED_;
+		return true;
+	}
+	
+	return true;
+}
 
 void GSM3SoftSerial::spaceAvailable()
 {
 	// If there is spaceAvailable in the buffer, lets send a XON
-//cb.write(10);	
-	write((byte)__XON__);
+	finalWrite((byte)__XON__);
 }
 
 

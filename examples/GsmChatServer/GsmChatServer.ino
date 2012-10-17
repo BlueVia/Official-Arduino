@@ -16,12 +16,10 @@
  */
 
 // libraries
-#include <GSM3MobileServerService.h>
-#include <GSM3ShieldV1ServerProvider.h>
-#include <GSM3MobileClientService.h>
-#include <GSM3ShieldV1ClientProvider.h>
-#include <GSM3ShieldV1AccessProvider.h>
-#include <GSM3ShieldV1DataNetworkProvider.h>
+#include <GSM.h>
+
+// PIN Number
+#define PINNUMBER ""
 
 // APN data
 #define GPRS_APN       "GPRS_APN" // replace your GPRS APN
@@ -29,12 +27,10 @@
 #define GPRS_PASSWORD  "password" // replace with your GPRS password
 
 // initialize the library instance
-GSM3MobileClientService client;
-GSM3ShieldV1ClientProvider s1client;
-GSM3ShieldV1DataNetworkProvider gprs;
-GSM3ShieldV1AccessProvider gsmAccess;     // include a 'true' parameter for debug enabled
-GSM3MobileServerService server(80);       // port 80 (http default)
-GSM3ShieldV1ServerProvider s1server;
+GSMClient client;
+GPRS gprs;
+GSM gsmAccess;     // include a 'true' parameter for debug enabled
+GSMServer server(80);       // port 80 (http default)
 
 // timeout
 const unsigned long __TIMEOUT__ = 10*1000;
@@ -55,7 +51,7 @@ void setup()
   // If your SIM has PIN, pass it as a parameter of begin() in quotes
   while(notConnected)
   {
-    if((gsmAccess.begin()==GSM_READY) &
+    if((gsmAccess.begin(PINNUMBER)==GSM_READY) &
         (gprs.attachGPRS(GPRS_APN, GPRS_LOGIN, GPRS_PASSWORD)==GPRS_READY))
       notConnected = false;
     else

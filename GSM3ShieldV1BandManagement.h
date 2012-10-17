@@ -29,7 +29,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 The latest version of this library can always be found at
-http://www.tid.es
+https://github.com/BlueVia/Official-Arduino
 */
 #ifndef __GSM3SHIELDV1BANDMANAGEMENT__
 #define __GSM3SHIELDV1BANDMANAGEMENT__
@@ -44,7 +44,8 @@ typedef enum GSM3GSMBand {UNDEFINED, EGSM_MODE, DCS_MODE, PCS_MODE, EGSM_DCS_MOD
 class GSM3ShieldV1BandManagement
 {
 	private:
-		GSM3ShieldV1DirectModemProvider modem;
+	
+		GSM3ShieldV1DirectModemProvider modem; // Direct access to modem
 		
 		char* quectelStrings[NUMBEROFBANDS];// = {"\"EGSM_MODE\"", "\"DCS_MODE\"", "\"PCS_MODE\"",
 								//"\"EGSM_DCS_MODE\"", "\"GSM850_PCS_MODE\"", 
@@ -57,35 +58,30 @@ class GSM3ShieldV1BandManagement
 	public:
 	
 		/** Constructor
-         @param trace if true, dumps all AT dialogue to Serial
-		 @return - 
-		*/
+			@param trace		If true, dumps all AT dialogue to Serial
+		 */
 		GSM3ShieldV1BandManagement(bool trace=false);
 		
-		/** begin
-			Forces modem hardware restart, so we begin from scratch
-         @param 
-		 @return Always returns IDLE status
-		*/
+		/** Forces modem hardware restart, so we begin from scratch
+			@return always returns IDLE status
+		 */
 		GSM3_NetworkStatus_t begin();
 
-		/** getBand
-         @param 
-		 @return current modem work band
-		*/		
+		/** Get current modem work band 
+			@return current modem work band
+		 */		
 		GSM3GSMBand getBand();
 
-		/** getBandName
-         @param band
-		 @return String with band name, printable
-		*/				
+		/** Get band name
+			@param band			Band
+			@return String with band name, printable
+		 */				
 		String getBandName(GSM3GSMBand band);
 
-		/** setBand
-			This command changes the modem operating band. 
-         @param band, desired new band
-		 @return true if success, false otherwise
-		*/			
+		/** Changes the modem operating band 
+			@param band			Desired new band
+			@return true if success, false otherwise
+		 */			
 		bool setBand(GSM3GSMBand band);
 			
 };

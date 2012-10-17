@@ -20,14 +20,14 @@
  */
 
 // libraries
-#include <GSM3VoiceCallService.h>
-#include <GSM3ShieldV1AccessProvider.h>
-#include <GSM3ShieldV1VoiceProvider.h>
+#include <GSM.h>
+
+// PIN Number
+#define PINNUMBER ""
 
 // initialize the library instance
-GSM3ShieldV1AccessProvider gsmAccess; // include a 'true' parameter for debug enabled
-GSM3VoiceCallService vcs;
-GSM3ShieldV1VoiceProvider gsv;
+GSM gsmAccess; // include a 'true' parameter for debug enabled
+GSMVoiceCall vcs;
 
 String remoteNumber = "";  // the number you will call
 char charbuffer[20];
@@ -47,7 +47,7 @@ void setup()
   // If your SIM has PIN, pass it as a parameter of begin() in quotes
   while(notConnected)
   {
-    if(gsmAccess.begin()==GSM_READY)
+    if(gsmAccess.begin(PINNUMBER)==GSM_READY)
       notConnected = false;
     else
     {
@@ -87,7 +87,6 @@ void loop()
         if(vcs.voiceCall(charbuffer))
         {
           Serial.println("Call Established. Enter line to end");
-          vcs.getvoiceCallStatus()==TALKING;
           // Wait for some input from the line
           while(Serial.read()!='\n' && (vcs.getvoiceCallStatus()==TALKING));          
           // And hang up

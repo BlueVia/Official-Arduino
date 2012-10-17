@@ -6,25 +6,13 @@
 #define __TOUTMODEMCONFIGURATION__ 5000//equivalent to 30000 because of time in interrupt routine.
 #define __TOUTAT__ 1000
 
-PROGMEM prog_char _command_AT[]={"AT"};
-PROGMEM prog_char _command_CPIN[]={"AT+CPIN="};
-PROGMEM prog_char _command_CGREG[]={"AT+CGREG?"};
-PROGMEM prog_char _command_CMGF[]={"AT+CMGF=1"};
-PROGMEM prog_char _command_IFC[]={"AT+IFC=1,1"};
-PROGMEM prog_char _command_CLIP[]={"AT+CLIP=1"};
-PROGMEM prog_char _rsp_NetHomeRegistered[]={"+CGREG: 0,1"};
-PROGMEM prog_char _rsp_NetRoamingRegistered[]={"+CGREG: 0,5"};
-PROGMEM prog_char _command_ATE0[]={"ATE0"};
-PROGMEM prog_char _command_COLP[]={"AT+COLP=1"};
-
-PROGMEM prog_char _rsp_PowerDown[]={"POWER DOWN"}; // "NORMAL POWER DOWN"
-
+char _command_AT[] PROGMEM = "AT";
+char _command_CGREG[] PROGMEM = "AT+CGREG?";
 
 GSM3ShieldV1AccessProvider::GSM3ShieldV1AccessProvider(bool debug)
 {
 	theGSM3ShieldV1ModemCore.setDebug(debug);
 	theGSM3ShieldV1ModemCore.gss.begin(9600);
-
 }
 
 void GSM3ShieldV1AccessProvider::manageResponse(byte from, byte to)
@@ -65,9 +53,7 @@ GSM3_NetworkStatus_t GSM3ShieldV1AccessProvider::begin(char* pin, bool restart, 
 	}
 	
 	return getStatus();
-	
 }
-
 
 //HWrestart.
 int GSM3ShieldV1AccessProvider::HWrestart()
@@ -134,7 +120,7 @@ void GSM3ShieldV1AccessProvider::ModemConfigurationContinue()
 				// OK received
 				if(theGSM3ShieldV1ModemCore.getPhoneNumber() && (theGSM3ShieldV1ModemCore.getPhoneNumber()[0]!=0)) 
 					{
-						theGSM3ShieldV1ModemCore.genericCommand_rq(_command_CPIN, false);
+						theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("AT+CPIN="), false);
 						theGSM3ShieldV1ModemCore.setCommandCounter(3);
 						theGSM3ShieldV1ModemCore.genericCommand_rqc(theGSM3ShieldV1ModemCore.getPhoneNumber());
 					}
@@ -166,14 +152,14 @@ void GSM3ShieldV1AccessProvider::ModemConfigurationContinue()
 	case 4:
 		char auxLocate1 [12];
 		char auxLocate2 [12];
-		prepareAuxLocate(_rsp_NetHomeRegistered, auxLocate1);
-		prepareAuxLocate(_rsp_NetRoamingRegistered, auxLocate2);
+		prepareAuxLocate(PSTR("+CGREG: 0,1"), auxLocate1);
+		prepareAuxLocate(PSTR("+CGREG: 0,5"), auxLocate2);
 		if(theGSM3ShieldV1ModemCore.genericParse_rsp(resp, auxLocate1, auxLocate2))
 		{
 			if(resp)
 			{
 				theGSM3ShieldV1ModemCore.setCommandCounter(5);
-				theGSM3ShieldV1ModemCore.genericCommand_rq(_command_IFC);
+				theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("AT+IFC=1,1"));
 			}
 			else
 			{
@@ -198,7 +184,7 @@ void GSM3ShieldV1AccessProvider::ModemConfigurationContinue()
 			theGSM3ShieldV1ModemCore.delayInsideInterrupt(2000);
 			// 9: SMS Text Mode
 			theGSM3ShieldV1ModemCore.setCommandCounter(6);
-			theGSM3ShieldV1ModemCore.genericCommand_rq(_command_CMGF);
+			theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("AT+CMGF=1"));
 		}
       break;	
 	case 6:
@@ -207,7 +193,7 @@ void GSM3ShieldV1AccessProvider::ModemConfigurationContinue()
 		{
 			//Calling line identification
 			theGSM3ShieldV1ModemCore.setCommandCounter(7);			
-			theGSM3ShieldV1ModemCore.genericCommand_rq(_command_CLIP);
+			theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("AT+CLIP=1"));
 		}
       break;
 	case 7:
@@ -216,7 +202,7 @@ void GSM3ShieldV1AccessProvider::ModemConfigurationContinue()
 		{
 			// Echo off
 			theGSM3ShieldV1ModemCore.setCommandCounter(8);			
-			theGSM3ShieldV1ModemCore.genericCommand_rq(_command_ATE0);
+			theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("ATE0"));
 		}
       break;
 	case 8:
@@ -224,7 +210,7 @@ void GSM3ShieldV1AccessProvider::ModemConfigurationContinue()
 		if(theGSM3ShieldV1ModemCore.genericParse_rsp(resp))
 		{
 			theGSM3ShieldV1ModemCore.setCommandCounter(9);			
-			theGSM3ShieldV1ModemCore.genericCommand_rq(_command_COLP);
+			theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("AT+COLP=1"));
 		}
       break; 
 	  case 9:
@@ -287,7 +273,7 @@ bool GSM3ShieldV1AccessProvider::shutdown()
 	theGSM3ShieldV1ModemCore.gss.close();
 	
 	m=millis();
-	prepareAuxLocate(_rsp_PowerDown, auxLocate);
+	prepareAuxLocate(PSTR("POWER DOWN"), auxLocate);
 	while((millis()-m) < __TOUTSHUTDOWN__)
 	{
 		delay(1);

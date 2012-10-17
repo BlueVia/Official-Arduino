@@ -29,7 +29,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 The latest version of this library can always be found at
-http://www.tid.es
+https://github.com/BlueVia/Official-Arduino
 */
 #ifndef __GSM3_SOFTSERIAL__
 #define __GSM3_SOFTSERIAL__
@@ -60,6 +60,11 @@ http://www.tid.es
 class GSM3SoftSerialMgr
 {
 	public:
+	
+		/** Manages soft serial message
+			@param from			Initial byte
+			@param to			Final byte
+		 */
 		virtual void manageMsg(byte from, byte to);
 };
 
@@ -69,42 +74,101 @@ class GSM3SoftSerialMgr
 class GSM3SoftSerial : public GSM3CircularBufferManager
 {
 	private:
-	  uint8_t _receiveBitMask;
-	  volatile uint8_t *_receivePortRegister;
-      uint8_t _transmitBitMask;
-      volatile uint8_t *_transmitPortRegister;
+	
+		uint8_t _receiveBitMask;
+		volatile uint8_t *_receivePortRegister;
+		uint8_t _transmitBitMask;
+		volatile uint8_t *_transmitPortRegister;
 	  
-	  static GSM3SoftSerial* _activeObject;
-	  GSM3SoftSerialMgr* mgr;
+		static GSM3SoftSerial* _activeObject;
+		GSM3SoftSerialMgr* mgr;
 	  
-	  uint16_t _rx_delay_centering;
-	  uint16_t _rx_delay_intrabit;
-	  uint16_t _rx_delay_stopbit;
-	  uint16_t _tx_delay;
-	  	  
-	  void tx_pin_write(uint8_t pin_state);
-	  void setTX();
-	  void setRX();
-	  void recv();
-	  uint8_t rx_pin_read();
-	  void setComsReceived();
+		uint16_t _rx_delay_centering;
+		uint16_t _rx_delay_intrabit;
+		uint16_t _rx_delay_stopbit;
+		uint16_t _tx_delay;
+		uint8_t _flags;
 	  
-	  // Checks the buffer for well-known events. 
-	  //bool recognizeUnsolicitedEvent(byte oldTail);
-	  
+		/** Write in tx_pin
+			@param pin_state		Pin state
+		 */
+		void tx_pin_write(uint8_t pin_state);
+		
+		/** Set transmission
+		 */
+		void setTX();
+		
+		/** Set receiver
+		 */
+		void setRX();
+		
+		/** Receive
+		 */
+		void recv();
+		
+		/** Read from rx_pin
+			@return receive bit mask
+		 */
+		uint8_t rx_pin_read();
+		
+		void setComsReceived();
+		
+		/** Write a character in serial connection, final action after escaping
+			@param c			Character
+			@return	1 if succesful, 0 if transmission delay = 0
+		 */
+		virtual size_t finalWrite(uint8_t);
+
+		/** Decide, attending to escapes, if the received character should we
+		    kept, forgotten, or changed
+			@param c			Character, may be changed
+			@return	1 if shall be kept, 0 if forgotten
+		 */
+		bool keepThisChar(uint8_t* c);
+		  
+		// Checks the buffer for well-known events. 
+		//bool recognizeUnsolicitedEvent(byte oldTail);
 	  
 	  public:
-	    static /*inline */void tunedDelay(uint16_t delay);
-		GSM3CircularBuffer cb;
-		inline void registerMgr(GSM3SoftSerialMgr* manager){mgr=manager;};
-		void spaceAvailable();
-		virtual size_t write(uint8_t);
-		GSM3SoftSerial();
-		int begin(long speed);
-		static inline void handle_interrupt();
-		void close();
+	  
+		/** Tuned delay in microcontroller
+			@param delay		Time to delay
+		 */
+		static /*inline */void tunedDelay(uint16_t delay);
 		
-
+		GSM3CircularBuffer cb; // Circular buffer
+		
+		/** Register serial manager
+			@param manager		Serial manager
+		 */
+		inline void registerMgr(GSM3SoftSerialMgr* manager){mgr=manager;};
+		
+		/** If there is spaceAvailable in the buffer, lets send a XON
+		 */
+		void spaceAvailable();
+		
+		/** Write a character in serial connection
+			@param c			Character
+			@return	1 if succesful, 0 if transmission delay = 0
+		 */
+		virtual size_t write(uint8_t);
+		
+		/** Constructor */
+		GSM3SoftSerial();
+		
+		/** Establish serial connection
+			@param speed		Baudrate
+			@return
+		 */
+		int begin(long speed);
+		
+		/** Manage interruptions
+		 */
+		static inline void handle_interrupt();
+		
+		/** Close serial connection
+		 */
+		void close();
 };
 
 #endif
