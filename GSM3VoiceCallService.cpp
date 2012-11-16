@@ -34,18 +34,22 @@ https://github.com/BlueVia/Official-Arduino
 #include <GSM3VoiceCallService.h>
 #include <Arduino.h>
 
-// While there is only a shield (ShieldV1) we will include it by default
 #include <GSM3ShieldV1VoiceProvider.h>
 GSM3ShieldV1VoiceProvider theShieldV1VoiceProvider;
 
+// While there is only a shield (ShieldV1) we will include it by default
+
 #define GSM3VOICECALLSERVICE_SYNCH 0x01 // 1: synchronous 0: asynchronous
 #define __TOUT__ 10000
+
+
 
 
 GSM3VoiceCallService::GSM3VoiceCallService(bool synch)
 {
 	if(synch)
 		flags |= GSM3VOICECALLSERVICE_SYNCH;
+	theGSM3MobileVoiceProvider->initialize();
 }
 
 GSM3_voiceCall_st GSM3VoiceCallService::getvoiceCallStatus()

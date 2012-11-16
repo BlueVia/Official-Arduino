@@ -17,9 +17,9 @@
 #define PINNUMBER ""
 
 // APN data
-#define GPRS_APN       "bluevia.movistar.es" // replace your GPRS APN
-#define GPRS_LOGIN     ""    // replace with your GPRS login
-#define GPRS_PASSWORD  "" // replace with your GPRS password
+#define GPRS_APN       "GPRS_APN" // replace your GPRS APN
+#define GPRS_LOGIN     "login"    // replace with your GPRS login
+#define GPRS_PASSWORD  "password" // replace with your GPRS password
 
 // initialize the library instance
 GSMClient client;
@@ -37,7 +37,7 @@ void setup()
 {
   // initialize serial communications
   Serial.begin(9600);
-  
+  Serial.println("Starting Arduino web client.");
   // connection state
   boolean notConnected = true;
   

@@ -1,10 +1,15 @@
 #include <GSM3ShieldV1VoiceProvider.h>
+#include <Arduino.h>
 
 GSM3ShieldV1VoiceProvider::GSM3ShieldV1VoiceProvider()
  {
 	phonelength=0;
 	theGSM3MobileVoiceProvider=this;
-	theGSM3ShieldV1ModemCore.registerUMProvider(this);
+ }
+ 
+ void GSM3ShieldV1VoiceProvider::initialize()
+ {
+ 	theGSM3ShieldV1ModemCore.registerUMProvider(this);
  }
  
 //Voice Call main function.

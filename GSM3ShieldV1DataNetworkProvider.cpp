@@ -42,15 +42,17 @@ void GSM3ShieldV1DataNetworkProvider::attachGPRSContinue()
 	// 9: Wait for Register OK and Activate FGCNT "AT+QIACT"
 	// 10: Wait for activate OK
 	
-	switch (theGSM3ShieldV1ModemCore.getCommandCounter()) {
-    case 1:
+	int ct=theGSM3ShieldV1ModemCore.getCommandCounter();
+	if(ct==1)
+	{
 		//AT+CGATT	
 		theGSM3ShieldV1ModemCore.genericCommand_rq(_command_CGATT,false);
 		theGSM3ShieldV1ModemCore.print(1);
 		theGSM3ShieldV1ModemCore.print('\r');
 		theGSM3ShieldV1ModemCore.setCommandCounter(2);
-      break;
-	case 2:
+	}
+	else if(ct==2)
+	{
 		if(theGSM3ShieldV1ModemCore.genericParse_rsp(resp))
 	    {
 			if(resp)
@@ -61,8 +63,9 @@ void GSM3ShieldV1DataNetworkProvider::attachGPRSContinue()
 			}
 			else theGSM3ShieldV1ModemCore.closeCommand(3);
 		}
-      break;
-	case 3:
+	}
+	else if(ct==3)
+	{
 		if(theGSM3ShieldV1ModemCore.genericParse_rsp(resp))
 	    {
 			if(resp)
@@ -81,8 +84,9 @@ void GSM3ShieldV1DataNetworkProvider::attachGPRSContinue()
 			}
 			else theGSM3ShieldV1ModemCore.closeCommand(3);
 		}
-      break;
-	case 4:
+	}
+	else if(ct==4)
+	{
 		if(theGSM3ShieldV1ModemCore.genericParse_rsp(resp))
 	    {
 			if(resp)
@@ -93,8 +97,9 @@ void GSM3ShieldV1DataNetworkProvider::attachGPRSContinue()
 			}
 			else theGSM3ShieldV1ModemCore.closeCommand(3);
 		}
-      break;
-	case 5:
+	}
+	else if(ct==5)
+	{
 		if(theGSM3ShieldV1ModemCore.genericParse_rsp(resp))
 	    {
 			if(resp)
@@ -105,8 +110,9 @@ void GSM3ShieldV1DataNetworkProvider::attachGPRSContinue()
 			}
 			else theGSM3ShieldV1ModemCore.closeCommand(3);
 		}
-      break;
-	case 6:
+	}
+	else if(ct==6)
+	{
 		if(theGSM3ShieldV1ModemCore.genericParse_rsp(resp))
 	    {
 			if(resp)
@@ -117,8 +123,9 @@ void GSM3ShieldV1DataNetworkProvider::attachGPRSContinue()
 			}
 			else theGSM3ShieldV1ModemCore.closeCommand(3);
 		}
-      break;
-	case 8:
+	}
+	else if(ct==8)
+	{
 		if(theGSM3ShieldV1ModemCore.genericParse_rsp(resp))
 	    {
 			if(resp)
@@ -129,8 +136,9 @@ void GSM3ShieldV1DataNetworkProvider::attachGPRSContinue()
 			}
 			else theGSM3ShieldV1ModemCore.closeCommand(3);
 		}
-      break;
-	case 9:
+	}
+	else if(ct==9)
+	{
 		if(theGSM3ShieldV1ModemCore.genericParse_rsp(resp))
 	    {
 			if(resp)
@@ -141,8 +149,9 @@ void GSM3ShieldV1DataNetworkProvider::attachGPRSContinue()
 			}
 			else theGSM3ShieldV1ModemCore.closeCommand(3);
 		}
-      break;
-	case 10:
+	}
+	else if(ct==10)
+	{
 		if(theGSM3ShieldV1ModemCore.genericParse_rsp(resp))
 	    {
 			if (resp) 
@@ -152,7 +161,6 @@ void GSM3ShieldV1DataNetworkProvider::attachGPRSContinue()
 				}
 			else theGSM3ShieldV1ModemCore.closeCommand(3);
 		}
-      break;
 	}
 }
 

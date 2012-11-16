@@ -73,7 +73,7 @@ class GSM3ShieldV1CellManagement : public GSM3MobileCellManagement, public GSM3S
 		char *locationArea;
 		char *cellId;
 		
-		char bufferICCID[19];
+		char *bufferICCID;
 	
 		/** Continue to getLocation function
 		 */

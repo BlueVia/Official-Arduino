@@ -9,10 +9,12 @@
 char _command_AT[] PROGMEM = "AT";
 char _command_CGREG[] PROGMEM = "AT+CGREG?";
 
+
 GSM3ShieldV1AccessProvider::GSM3ShieldV1AccessProvider(bool debug)
 {
 	theGSM3ShieldV1ModemCore.setDebug(debug);
-	theGSM3ShieldV1ModemCore.gss.begin(9600);
+	theGSM3ShieldV1ModemCore.gss.begin(9600);	
+
 }
 
 void GSM3ShieldV1AccessProvider::manageResponse(byte from, byte to)
@@ -36,7 +38,7 @@ void GSM3ShieldV1AccessProvider::manageResponse(byte from, byte to)
 GSM3_NetworkStatus_t GSM3ShieldV1AccessProvider::begin(char* pin, bool restart, bool synchronous)
 {	
 	pinMode(__RESETPIN__, OUTPUT);
-	
+
 	// If asked for modem restart, restart
 	if (restart) 
 		HWrestart();
@@ -51,7 +53,6 @@ GSM3_NetworkStatus_t GSM3ShieldV1AccessProvider::begin(char* pin, bool restart, 
 		while(ready()==0) 
 			delay(1000); 
 	}
-	
 	return getStatus();
 }
 
@@ -104,14 +105,15 @@ void GSM3ShieldV1AccessProvider::ModemConfigurationContinue()
 	// 7: Wait Calling Line Id OK and Echo off
 	// 8: Wait for OK and COLP command for connecting line identification.
 	// 9: Wait for OK.
-	
-	switch (theGSM3ShieldV1ModemCore.getCommandCounter()) {
-    case 1:
+	int ct=theGSM3ShieldV1ModemCore.getCommandCounter();
+	if(ct==1)
+	{
 		// Launch AT	
 		theGSM3ShieldV1ModemCore.setCommandCounter(2);
 		theGSM3ShieldV1ModemCore.genericCommand_rq(_command_AT);
-      break;
-	case 2:
+	}
+	else if(ct==2)
+	{
 		// Wait for AT - OK.
 	   if(theGSM3ShieldV1ModemCore.genericParse_rsp(resp))
 	   {
@@ -135,8 +137,9 @@ void GSM3ShieldV1AccessProvider::ModemConfigurationContinue()
 			}
 			else theGSM3ShieldV1ModemCore.closeCommand(3);
 		}
-      break;
-	case 3:
+	}
+	else if(ct==3)
+	{
 		if(theGSM3ShieldV1ModemCore.genericParse_rsp(resp))
 	    {
 			if(resp)
@@ -148,8 +151,9 @@ void GSM3ShieldV1AccessProvider::ModemConfigurationContinue()
 			}
 			else theGSM3ShieldV1ModemCore.closeCommand(3);
 	    }
-      break;
-	case 4:
+	}
+	else if(ct==4)
+	{
 		char auxLocate1 [12];
 		char auxLocate2 [12];
 		prepareAuxLocate(PSTR("+CGREG: 0,1"), auxLocate1);
@@ -175,8 +179,9 @@ void GSM3ShieldV1AccessProvider::ModemConfigurationContinue()
 				}
 			}
 		}	
-      break;
-	case 5:
+	}
+	else if(ct==5)
+	{
 		// 5: Wait IFC OK
 		if(theGSM3ShieldV1ModemCore.genericParse_rsp(resp))
 		{
@@ -186,8 +191,9 @@ void GSM3ShieldV1AccessProvider::ModemConfigurationContinue()
 			theGSM3ShieldV1ModemCore.setCommandCounter(6);
 			theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("AT+CMGF=1"));
 		}
-      break;	
-	case 6:
+	}
+	else if(ct==6)
+	{
 		// 6: Wait SMS text Mode OK
 		if(theGSM3ShieldV1ModemCore.genericParse_rsp(resp))
 		{
@@ -195,8 +201,9 @@ void GSM3ShieldV1AccessProvider::ModemConfigurationContinue()
 			theGSM3ShieldV1ModemCore.setCommandCounter(7);			
 			theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("AT+CLIP=1"));
 		}
-      break;
-	case 7:
+	}
+	else if(ct==7)
+	{
 		// 7: Wait Calling Line Id OK
 		if(theGSM3ShieldV1ModemCore.genericParse_rsp(resp))
 		{
@@ -204,17 +211,21 @@ void GSM3ShieldV1AccessProvider::ModemConfigurationContinue()
 			theGSM3ShieldV1ModemCore.setCommandCounter(8);			
 			theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("ATE0"));
 		}
-      break;
-	case 8:
+	}
+	else if(ct==8)
+	{
 		// 8: Wait ATEO OK, send COLP
+		// In Arduino Mega, attention, take away the COLP step
+		// It looks as we can only have 8 steps
 		if(theGSM3ShieldV1ModemCore.genericParse_rsp(resp))
 		{
-			theGSM3ShieldV1ModemCore.setCommandCounter(9);			
+			theGSM3ShieldV1ModemCore.setCommandCounter(9);
 			theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("AT+COLP=1"));
 		}
-      break; 
-	  case 9:
-		// 10: Wait ATCOLP OK
+	}
+	else if(ct==9)
+	{
+		// 9: Wait ATCOLP OK
 		if(theGSM3ShieldV1ModemCore.genericParse_rsp(resp))
 		{
 			if (resp) 
@@ -224,8 +235,7 @@ void GSM3ShieldV1AccessProvider::ModemConfigurationContinue()
 				}
 			else theGSM3ShieldV1ModemCore.closeCommand(3);
 		}
-      break;  
-	}
+ 	}
 }
 
 //Alive Test main function.

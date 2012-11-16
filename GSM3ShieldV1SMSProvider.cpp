@@ -214,6 +214,12 @@ int GSM3ShieldV1SMSProvider::readSMS()
 //Read socket main function.
 int GSM3ShieldV1SMSProvider::peekSMS()
 {
+	if (!flagReadingSMS) 
+	{
+		flagReadingSMS = 1;
+		theGSM3ShieldV1ModemCore.theBuffer().chopUntil("\n", true);
+	}
+
 	return theGSM3ShieldV1ModemCore.theBuffer().peek(0); 
 }
 	

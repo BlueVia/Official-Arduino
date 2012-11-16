@@ -42,6 +42,12 @@ https://github.com/BlueVia/Official-Arduino
 #define __RXPIN__ 2
 #define __RXINT__ 3
 
+/* These can be used in Arduino Mega
+#define __TXPIN__ 11
+#define __RXPIN__ 10
+#define __RXINT__ 4 //11
+*/
+
 #define __XON__ 0x11
 #define __XOFF__ 0x13
 

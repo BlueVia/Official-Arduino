@@ -46,6 +46,10 @@ class GSM3ShieldV1VoiceProvider : public GSM3MobileVoiceProvider, public GSM3Shi
 		/** Constructor */
 		GSM3ShieldV1VoiceProvider();
 		
+		/** initilizer, links with modem provider */
+		void initialize();
+
+		
 		/** Manages modem response
 			@param from 		Initial byte of buffer
 			@param to 			Final byte of buffer

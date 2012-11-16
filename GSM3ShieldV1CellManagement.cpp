@@ -21,6 +21,7 @@ bool GSM3ShieldV1CellManagement::parseQCCID_available(bool& rsp)
 			i++;
 		}
 	}
+	bufferICCID[i]=0;
 	
 	return true;
 }			
@@ -46,12 +47,17 @@ bool GSM3ShieldV1CellManagement::parseQENG_available(bool& rsp)
 		location[i] = c;
 		i++;
 	}
+	location[i]=0;
 	
 	char* res_tok = strtok(location, ",");
-	countryCode = strtok(NULL, ",");
-	networkCode = strtok(NULL, ",");
-	locationArea = strtok(NULL, ",");
-	cellId = strtok(NULL, ",");
+	res_tok=strtok(NULL, ",");
+	strcpy(countryCode, res_tok);
+	res_tok=strtok(NULL, ",");
+	strcpy(networkCode, res_tok);
+	res_tok=strtok(NULL, ",");
+	strcpy(locationArea, res_tok);
+	res_tok=strtok(NULL, ",");
+	strcpy(cellId, res_tok);
 	
 	return true;
 }			
@@ -61,17 +67,17 @@ int GSM3ShieldV1CellManagement::getLocation(char *country, char *network, char *
 	if((theGSM3ShieldV1ModemCore.getStatus() != GSM_READY) && (theGSM3ShieldV1ModemCore.getStatus() != GPRS_READY))
 		return 2;
 	
+	countryCode=country;
+	networkCode=network;
+	locationArea=area;
+	cellId=cell;
+	
 	theGSM3ShieldV1ModemCore.openCommand(this,GETLOCATION);
 	getLocationContinue();
 	
 	unsigned long timeOut = millis();
 	while(((millis() - timeOut) < 5000) & (ready() == 0));
 
-	strcpy(country, countryCode);
-	strcpy(network, networkCode);
-	strcpy(area, locationArea);
-	strcpy(cell, cellId);
-	
 	return theGSM3ShieldV1ModemCore.getCommandError();
 }
 
@@ -114,14 +120,13 @@ int GSM3ShieldV1CellManagement::getICCID(char *iccid)
 	if((theGSM3ShieldV1ModemCore.getStatus() != GSM_READY) && (theGSM3ShieldV1ModemCore.getStatus() != GPRS_READY))
 		return 2;
 	
+	bufferICCID=iccid;
 	theGSM3ShieldV1ModemCore.openCommand(this,GETICCID);
 	getICCIDContinue();
 	
 	unsigned long timeOut = millis();
 	while(((millis() - timeOut) < 5000) & (ready() == 0));
-	
-	strcpy(iccid, bufferICCID);
-	
+		
 	return theGSM3ShieldV1ModemCore.getCommandError();
 }
 

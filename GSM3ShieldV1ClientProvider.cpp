@@ -140,14 +140,14 @@ int GSM3ShieldV1ClientProvider::disconnectTCP(bool client1Server0, int id_socket
 	theGSM3ShieldV1ModemCore.openCommand(this,DISCONNECTTCP);
 	
 	// If we are not closed, launch the command
-	if(theGSM3ShieldV1ModemCore.getStatus()==TRANSPARENT_CONNECTED)
-	{
+//[ZZ]	if(theGSM3ShieldV1ModemCore.getStatus()==TRANSPARENT_CONNECTED)
+//	{
 		delay(1000);
 		theGSM3ShieldV1ModemCore.print("+++");
 		delay(1000);
 		theGSM3ShieldV1ModemCore.genericCommand_rq(PSTR("AT+QICLOSE"));
 		theGSM3ShieldV1ModemCore.setStatus(GPRS_READY);
-	}
+//	}
 	// Looks like it runs everytime, so we simply flush to death and go on
 	do
 	{

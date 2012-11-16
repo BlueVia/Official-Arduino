@@ -25,6 +25,7 @@
 GSM gsmAccess; // include a 'true' parameter for debug enabled
 GSMVoiceCall vcs;
 
+
 char numtel[20];           // buffer for the incoming call
 
 void setup()

@@ -40,6 +40,12 @@ class GSM3MobileVoiceProvider
 {
 	public:
 		
+		/** Initialize the object relating it to the general infrastructure
+			@param
+			@return void
+		*/
+		virtual void initialize(){};
+		
 		/** Launch a voice call
 			@param number	 	Phone number to be called
 			@return If asynchronous, returns 0. If synchronous, 1 if success, other if error
