@@ -8,7 +8,7 @@ This file is part of the GSM3 communications library for Arduino
 -- TCP/IP connections
 -- HTTP basic clients
 
-This library has been developed by Telefónica Digital - PDI -
+This library has been developed by TelefÃ³nica Digital - PDI -
 - Physical Internet Lab, as part as its collaboration with
 Arduino and the Open Hardware Community. 
 
@@ -69,7 +69,7 @@ String GSM3ShieldV1ModemVerification::getIMEI()
 	modemResponse.toCharArray(res_to_compare, modemResponse.length());
 	if(strstr(res_to_compare,"OK") == NULL)
 	{	
-		return NULL;
+		return "";
 	}
 	else
 	{
